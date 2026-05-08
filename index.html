@@ -1,0 +1,2350 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Solvera</title>
+<style>
+:root{
+  --bg:#05070a;
+  --panel:rgba(12,16,26,.88);
+  --panel2:rgba(255,255,255,.03);
+  --glass:rgba(255,255,255,.05);
+  --line:rgba(255,255,255,.08);
+  --line2:rgba(126,121,255,.22);
+  --text:rgba(255,255,255,.96);
+  --muted:rgba(255,255,255,.55);
+  --blue:#34b7ff;
+  --cyan:#4dd5ff;
+  --purple:#6e5eff;
+  --violet:#a35cff;
+  --green:#22d37a;
+  --shadow:0 24px 70px rgba(0,0,0,.34);
+  --safe-top:env(safe-area-inset-top);
+  --safe-bottom:env(safe-area-inset-bottom);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  background:
+    radial-gradient(circle at 50% 12%, rgba(79,116,255,.14), transparent 25%),
+    radial-gradient(circle at 50% 82%, rgba(119,74,255,.08), transparent 24%),
+    linear-gradient(180deg, #04070c, #05070a 42%, #030406);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",system-ui,sans-serif;
+  overflow:hidden;
+}
+button,input,textarea{font:inherit}
+img{max-width:100%;display:block}
+.app{
+  position:relative;
+  width:100%;
+  height:100%;
+  display:grid;
+  grid-template-columns: 308px minmax(0,1fr) 476px;
+  gap:0;
+}
+.sidebar,.workspace,.center{
+  min-width:0;
+  min-height:0;
+}
+.sidebar{
+  display:flex;
+  flex-direction:column;
+  padding:18px 16px 16px;
+  border-right:1px solid rgba(255,255,255,.05);
+  background:linear-gradient(180deg, rgba(255,255,255,.015), rgba(255,255,255,.01));
+  backdrop-filter:blur(24px);
+}
+.center{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  padding:14px 18px 16px;
+}
+.workspace{
+  display:flex;
+  flex-direction:column;
+  padding:14px 14px 14px 0;
+}
+
+/* LOGO */
+.brand{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:18px;
+}
+.brand-left{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.logo-mark{
+  width:44px;height:44px;border-radius:50%;
+  position:relative;
+  flex:0 0 auto;
+  background:
+    radial-gradient(circle at 32% 30%, rgba(255,255,255,.48), transparent 18%),
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.06), transparent 45%),
+    conic-gradient(from 220deg, #39d3ff, #5f67ff, #ab55ff, #39d3ff);
+  box-shadow:0 0 0 1px rgba(255,255,255,.08), 0 0 25px rgba(57,211,255,.20);
+}
+.logo-mark::after{
+  content:"";
+  position:absolute;
+  inset:7px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255,255,255,.12), transparent 20%),
+    radial-gradient(circle at 55% 65%, rgba(20,26,46,.98), rgba(3,5,8,.98));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.brand-name{
+  letter-spacing:.38em;
+  text-indent:.38em;
+  font-size:15px;
+  font-weight:600;
+  color:rgba(255,255,255,.92);
+}
+.brand-action{
+  width:34px;height:34px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);
+  color:rgba(255,255,255,.76);
+  display:grid;place-items:center;
+}
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 12px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);
+  color:rgba(255,255,255,.86);
+  font-size:12px;
+  line-height:1;
+}
+.pill.live .dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 12px rgba(34,211,122,.78);
+}
+.sec-btn{
+  height:42px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);
+  color:rgba(255,255,255,.90);
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:0 14px;
+}
+.sidebar .primary{
+  height:48px;
+  margin:14px 0 18px;
+  border:none;
+  border-radius:14px;
+  color:#fff;
+  font-weight:600;
+  background:linear-gradient(135deg, rgba(57,211,255,.28), rgba(111,95,255,.68));
+  box-shadow:0 0 0 1px rgba(255,255,255,.06), 0 14px 40px rgba(81,95,255,.18);
+}
+.section-title{
+  margin:4px 0 12px;
+  color:rgba(255,255,255,.52);
+  font-size:12px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.chat-list,.memory-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.list-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 12px;
+  border-radius:14px;
+  color:rgba(255,255,255,.82);
+  border:1px solid transparent;
+  background:transparent;
+}
+.list-item .mini-icon{
+  width:18px;height:18px;border-radius:6px;
+  border:1px solid rgba(255,255,255,.16);
+  display:grid;place-items:center;
+  font-size:11px;
+  color:rgba(255,255,255,.66);
+}
+.list-item.active{
+  border-color:rgba(121,102,255,.34);
+  background:linear-gradient(180deg, rgba(121,102,255,.18), rgba(121,102,255,.08));
+}
+.list-item .meta{
+  margin-left:auto;
+  color:rgba(255,255,255,.34);
+  font-size:11px;
+}
+.sidebar .footer-card{
+  margin-top:auto;
+  padding:14px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.08);
+  background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  box-shadow:var(--shadow);
+}
+.profile-row{
+  display:flex;align-items:center;gap:12px;
+}
+.avatar{
+  width:42px;height:42px;border-radius:50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255,255,255,.28), transparent 22%),
+    conic-gradient(from 210deg, #4ad5ff, #675fff, #b65cff, #4ad5ff);
+  box-shadow:0 0 0 1px rgba(255,255,255,.10), 0 0 20px rgba(80,112,255,.18);
+}
+.avatar.small{width:30px;height:30px}
+.profile-name{font-weight:600}
+.profile-sub{font-size:12px;color:var(--muted)}
+.profile-actions{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:10px;color:rgba(255,255,255,.62);font-size:12px;
+}
+
+/* CENTER */
+.center-top{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  padding:4px 4px 10px;
+}
+.desktop-topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+.greeting{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.greeting .big{
+  font-size:28px;
+  line-height:1.05;
+  font-weight:700;
+  letter-spacing:-.03em;
+  background:linear-gradient(90deg, #5a6bff, #b35cff);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.greeting .small{
+  font-size:16px;color:rgba(255,255,255,.72);
+}
+.voice-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  height:50px;
+  padding:0 18px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);
+  color:rgba(255,255,255,.90);
+}
+.mobile-topbar,.mobile-status-card,.mobile-tabs,.mobile-bottom-nav,.mobile-switcher{display:none}
+.feed-wrap{
+  flex:1;
+  min-height:0;
+  overflow:hidden;
+  border-radius:24px;
+  border:1px solid rgba(255,255,255,.06);
+  background:rgba(255,255,255,.02);
+  box-shadow:var(--shadow);
+}
+.feed{
+  height:100%;
+  overflow:auto;
+  padding:20px 22px 26px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+}
+.row{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  animation:fadeIn .18s ease;
+}
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(6px)}
+  to{opacity:1; transform:translateY(0)}
+}
+.row.user{justify-content:flex-end}
+.row.user .bubble-wrap{align-items:flex-end}
+.row.bot{justify-content:flex-start}
+.bubble-wrap{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  max-width:min(76%, 640px);
+}
+.msg-meta{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  color:rgba(255,255,255,.42);
+  font-size:11px;
+  padding:0 6px;
+}
+.bot-badge{
+  width:26px;height:26px;border-radius:50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255,255,255,.38), transparent 22%),
+    conic-gradient(from 210deg, #45d8ff, #6359ff, #b055ff, #45d8ff);
+  box-shadow:0 0 0 1px rgba(255,255,255,.08), 0 0 18px rgba(74,117,255,.16);
+  flex:0 0 auto;
+}
+.bubble{
+  position:relative;
+  padding:16px 18px;
+  border-radius:22px;
+  line-height:1.5;
+  overflow:hidden;
+}
+.bubble.user{
+  background:linear-gradient(135deg, rgba(80,115,255,.94), rgba(116,83,255,.84));
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 10px 40px rgba(95,96,255,.24);
+}
+.bubble.user::after{
+  content:"";
+  position:absolute;right:-4px;bottom:0;width:14px;height:14px;
+  background:inherit;clip-path:polygon(0 0, 0 100%, 100% 0);
+}
+.bubble.bot{
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.035));
+  border:1px solid rgba(255,255,255,.07);
+  box-shadow:0 10px 40px rgba(0,0,0,.12);
+}
+.bubble.bot::after{
+  content:"";
+  position:absolute;left:-4px;bottom:0;width:14px;height:14px;
+  background:inherit;clip-path:polygon(100% 0, 0 0, 100% 100%);
+}
+.bubble .time{margin-top:8px;color:rgba(255,255,255,.48);font-size:11px;text-align:right}
+.typing{
+  display:flex;gap:5px;align-items:center;min-height:18px;
+}
+.typing span{
+  width:6px;height:6px;border-radius:50%;
+  background:#7b74ff;
+  animation:blip 1.15s infinite ease-in-out;
+}
+.typing span:nth-child(2){animation-delay:.14s}
+.typing span:nth-child(3){animation-delay:.28s}
+@keyframes blip{
+  0%,100%{opacity:.35; transform:translateY(0)}
+  50%{opacity:1; transform:translateY(-2px)}
+}
+.thinking-card{
+  width:min(100%, 520px);
+  padding:14px 14px 10px;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.08);
+  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+  box-shadow:0 16px 54px rgba(0,0,0,.18);
+}
+.thinking-head{
+  display:flex;align-items:center;gap:8px;
+  font-weight:600;color:#a58cff;
+  margin-bottom:12px;
+}
+.thinking-list{
+  display:flex;flex-direction:column;gap:10px;
+}
+.step{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:14px;
+  color:rgba(255,255,255,.68);
+}
+.step .left{
+  display:flex;align-items:center;gap:10px;
+}
+.step .bullet{
+  width:9px;height:9px;border-radius:50%;
+  background:rgba(255,255,255,.12);
+  box-shadow:0 0 0 1px rgba(255,255,255,.06);
+}
+.step.done .bullet{
+  background:var(--green);
+  box-shadow:0 0 12px rgba(34,211,122,.45);
+}
+.step.active{
+  color:#fff;
+}
+.step.active .bullet{
+  background:linear-gradient(180deg,#6fe2ff,#675fff);
+  box-shadow:0 0 0 4px rgba(103,95,255,.12);
+}
+.step .state{
+  font-size:12px;color:rgba(255,255,255,.36);
+}
+.step.done .state{color:var(--green)}
+.step.active .state{color:#a78bfa}
+.file-card{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  width:min(100%, 520px);
+  padding:14px 16px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);
+}
+.file-left{display:flex;align-items:center;gap:12px}
+.file-icon{
+  width:40px;height:40px;border-radius:14px;
+  border:1px solid rgba(255,255,255,.08);
+  display:grid;place-items:center;
+  background:rgba(255,255,255,.03);
+}
+.file-name{font-weight:600}
+.file-sub{font-size:12px;color:rgba(255,255,255,.48)}
+.file-actions{display:flex;gap:10px}
+.icon-btn{
+  width:34px;height:34px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);
+  color:rgba(255,255,255,.84);
+  display:grid;place-items:center;
+}
+.chips{
+  display:flex;gap:10px;flex-wrap:wrap;
+  padding:12px 2px 8px;
+}
+.chip{
+  height:38px;
+  padding:0 14px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);
+  color:rgba(255,255,255,.86);
+}
+.composer{
+  margin-top:12px;
+  border-radius:22px;
+  border:1px solid rgba(93,93,255,.24);
+  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+  box-shadow:0 0 0 1px rgba(255,255,255,.03), 0 18px 60px rgba(71,67,255,.10);
+  padding:12px;
+}
+.composer-row{
+  display:flex;align-items:center;gap:10px;
+}
+.plus-btn,.mic-btn,.send-btn{
+  width:52px;height:52px;border:none;border-radius:16px;
+  display:grid;place-items:center;
+}
+.plus-btn,.mic-btn{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.88);
+}
+.send-btn{
+  background:linear-gradient(135deg, var(--blue), var(--purple));
+  color:white;
+  box-shadow:0 10px 30px rgba(97,92,255,.34);
+}
+.input-wrap{
+  flex:1;
+  min-width:0;
+  min-height:52px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 4px 0 0;
+}
+.input{
+  width:100%;
+  min-height:52px;
+  border:none;
+  outline:none;
+  resize:none;
+  background:transparent;
+  color:var(--text);
+  font-size:16px;
+  line-height:1.45;
+  padding:12px 12px 12px 14px;
+}
+.input::placeholder{color:rgba(255,255,255,.34)}
+.status-line{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:10px;
+  color:rgba(255,255,255,.42);
+  font-size:12px;
+}
+.status-chip{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:8px 12px;border-radius:999px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+}
+.status-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 12px rgba(34,211,122,.8);
+}
+.progress-ring{
+  width:68px;height:68px;border-radius:50%;
+  background:conic-gradient(#675fff var(--p,72%), rgba(255,255,255,.08) 0);
+  display:grid;place-items:center;
+  box-shadow:0 0 0 1px rgba(255,255,255,.06), 0 0 22px rgba(103,95,255,.12);
+}
+.progress-ring::after{
+  content:attr(data-label);
+  width:52px;height:52px;border-radius:50%;
+  display:grid;place-items:center;
+  background:rgba(7,11,18,.96);
+  color:#fff;font-weight:600;font-size:15px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+}
+
+/* WORKSPACE */
+.workspace-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  margin-bottom:12px;
+}
+.workspace-title{
+  display:flex;flex-direction:column;gap:3px;
+}
+.workspace-title .big{
+  font-size:18px;font-weight:700;
+  display:flex;align-items:center;gap:10px;
+}
+.workspace-title .sub{color:rgba(255,255,255,.58);font-size:13px}
+.workspace-tools{
+  display:flex;align-items:center;gap:10px;
+}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 11px;border-radius:999px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.82);
+  font-size:12px;
+}
+.badge .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px rgba(34,211,122,.8)}
+.workspace-card{
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;
+  background:rgba(255,255,255,.03);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.workspace-status{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:16px;
+}
+.workspace-status .left{
+  display:flex;align-items:center;gap:14px;
+}
+.workspace-copy{
+  display:flex;flex-direction:column;gap:4px;
+}
+.workspace-copy .state{
+  color:#7ef2a2;font-weight:600;
+}
+.workspace-copy .muted{color:rgba(255,255,255,.52)}
+.workspace-tabs{
+  display:flex;
+  gap:0;
+  padding:0 16px;
+  border-top:1px solid rgba(255,255,255,.05);
+}
+.tab{
+  height:46px;
+  padding:0 14px;
+  border:none;
+  color:rgba(255,255,255,.62);
+  background:transparent;
+  border-bottom:2px solid transparent;
+}
+.tab.active{
+  color:#fff;
+  border-bottom-color:#7a68ff;
+}
+.tab-panes{
+  min-height:0;
+  display:grid;
+}
+.pane{
+  display:none;
+  min-height:0;
+  height:100%;
+}
+.pane.active{display:block}
+.terminal{
+  height:100%;
+  min-height:280px;
+  padding:14px 16px 16px;
+  background:rgba(0,0,0,.22);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  color:#8ef0a9;
+  line-height:1.6;
+  overflow:auto;
+  white-space:pre-wrap;
+}
+.file-list{
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  max-height:336px;
+  overflow:auto;
+}
+.file-row{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:12px 12px;
+  border-radius:14px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);
+}
+.file-row .name{font-weight:600}
+.file-row .size{color:rgba(255,255,255,.45);font-size:12px}
+.preview-iframe{
+  width:100%;height:100%;
+  min-height:320px;
+  border:none;
+  background:white;
+}
+.logs-list{
+  padding:12px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  max-height:340px;
+  overflow:auto;
+}
+.log-item{
+  padding:10px 12px;
+  border-radius:14px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+  color:rgba(255,255,255,.82);
+  font-size:13px;
+}
+.log-item .t{color:rgba(255,255,255,.44);font-size:11px;margin-top:6px}
+.footer-bottom{
+  margin-top:12px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  justify-content:space-between;
+  color:rgba(255,255,255,.52);
+  font-size:12px;
+}
+.footer-actions{
+  display:flex;gap:10px;
+}
+.small-btn{
+  height:40px;
+  padding:0 14px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);
+  color:rgba(255,255,255,.88);
+}
+
+/* MODALS */
+.overlay{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  background:rgba(0,0,0,.52);
+  backdrop-filter:blur(18px);
+  display:none;
+}
+.overlay.open{display:block}
+.modal{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  padding:20px;
+}
+.modal-card{
+  width:min(92vw, 520px);
+  border-radius:24px;
+  border:1px solid rgba(255,255,255,.09);
+  background:rgba(11,14,22,.98);
+  box-shadow:0 34px 120px rgba(0,0,0,.48);
+  padding:18px;
+}
+.modal-title{
+  font-size:18px;font-weight:700;margin-bottom:6px;
+}
+.modal-sub{
+  color:rgba(255,255,255,.58);
+  font-size:13px;margin-bottom:16px;
+}
+.modal-row{
+  display:flex;gap:10px;align-items:center;
+}
+.modal-input{
+  flex:1;
+  height:48px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);
+  color:#fff;
+  padding:0 14px;
+  outline:none;
+}
+.modal-error{color:#ff8585;font-size:12px;margin-top:10px;min-height:16px}
+.file-modal-body{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.file-content{
+  min-height:240px;
+  max-height:60vh;
+  overflow:auto;
+  padding:14px;
+  border-radius:16px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  white-space:pre-wrap;
+}
+.file-modal-actions{
+  display:flex;gap:10px;justify-content:flex-end;
+}
+.drawer{
+  display:none;
+}
+
+/* DESKTOP VS MOBILE */
+@media (max-width: 1180px){
+  .app{grid-template-columns: 282px minmax(0,1fr) 420px}
+}
+@media (max-width: 980px){
+  .app{
+    grid-template-columns:1fr;
+  }
+  .sidebar{display:none}
+  .workspace{
+    position:fixed;
+    top:0;right:0;bottom:0;
+    width:min(100vw, 430px);
+    padding:12px;
+    background:rgba(4,7,12,.98);
+    backdrop-filter:blur(20px);
+    border-left:1px solid rgba(255,255,255,.08);
+    transform:translateX(100%);
+    transition:transform .28s ease;
+    z-index:40;
+  }
+  body.workspace-open .workspace{
+    transform:translateX(0);
+  }
+  body.workspace-open .center{
+    filter:blur(2px);
+    pointer-events:none;
+  }
+  .center{
+    padding:12px;
+  }
+  .desktop-topbar{display:none}
+  .mobile-topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:6px 4px 12px;
+  }
+  .mobile-brand{
+    display:flex;align-items:center;gap:12px;
+  }
+  .mobile-top-actions{
+    display:flex;gap:10px;
+  }
+  .mobile-status-card{
+    display:flex;
+    gap:14px;
+    align-items:center;
+    padding:14px;
+    border-radius:20px;
+    border:1px solid rgba(255,255,255,.08);
+    background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+    box-shadow:var(--shadow);
+    margin-bottom:12px;
+  }
+  .mobile-status-text{
+    flex:1;min-width:0;
+  }
+  .mobile-status-text .title{
+    font-weight:700;font-size:15px;margin-bottom:3px;
+  }
+  .mobile-status-text .sub{
+    color:rgba(255,255,255,.55);font-size:13px;
+  }
+  .mobile-tabs{
+    display:flex;
+    gap:0;
+    margin-bottom:12px;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.03);
+    border-radius:16px;
+    overflow:hidden;
+  }
+  .mobile-tabs .m-tab{
+    flex:1;
+    height:48px;
+    border:none;
+    background:transparent;
+    color:rgba(255,255,255,.70);
+  }
+  .mobile-tabs .m-tab.active{
+    color:#fff;
+    background:linear-gradient(180deg, rgba(103,95,255,.36), rgba(103,95,255,.18));
+  }
+  .feed-wrap{
+    border-radius:22px;
+    min-height:0;
+  }
+  .feed{
+    padding:16px 14px 22px;
+  }
+  .bubble-wrap{max-width:88%}
+  .workspace-tabs{padding:0 10px}
+  .workspace-status{padding:14px}
+  .footer-bottom{display:none}
+  .mobile-switcher{
+    display:flex;
+    gap:8px;
+    overflow:auto;
+    padding:0 2px 10px;
+  }
+  .mobile-switcher .chip{flex:0 0 auto}
+  .mobile-bottom-nav{
+    display:flex;
+    position:fixed;
+    left:12px;right:12px;
+    bottom:calc(12px + var(--safe-bottom));
+    z-index:55;
+    padding:10px 12px;
+    border-radius:22px;
+    background:rgba(11,14,22,.95);
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 24px 70px rgba(0,0,0,.44);
+    justify-content:space-between;
+    gap:8px;
+  }
+  .nav-item{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    color:rgba(255,255,255,.58);
+    font-size:11px;
+    border:none;
+    background:transparent;
+    padding:6px 0;
+  }
+  .nav-item .orb{
+    width:34px;height:34px;border-radius:50%;
+    display:grid;place-items:center;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.03);
+  }
+  .nav-item.active{
+    color:#fff;
+  }
+  .nav-item.core .orb{
+    width:46px;height:46px;
+    box-shadow:0 0 0 1px rgba(255,255,255,.08), 0 0 24px rgba(103,95,255,.14);
+    background:
+      radial-gradient(circle at 35% 30%, rgba(255,255,255,.28), transparent 20%),
+      conic-gradient(from 220deg, #45d8ff, #6359ff, #b055ff, #45d8ff);
+  }
+  .mobile-space{
+    height:98px;
+  }
+}
+
+/* small devices */
+@media (max-width: 520px){
+  .greeting .big{font-size:22px}
+  .greeting .small{font-size:14px}
+  .voice-btn{height:46px;padding:0 14px}
+  .composer{padding:10px}
+  .plus-btn,.mic-btn,.send-btn{width:46px;height:46px}
+  .input{font-size:15px}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-left">
+        <div class="logo-mark"></div>
+        <div class="brand-name">SOLVERA</div>
+      </div>
+      <button class="brand-action" id="sidebarOpenBtn" title="Open">↗</button>
+    </div>
+
+    <button class="primary" id="newChatBtn">＋ New Chat</button>
+
+    <div class="section-title">Chats</div>
+    <div class="chat-list" id="chatList"></div>
+
+    <div class="section-title" style="margin-top:18px">Memory</div>
+    <div class="memory-list" id="memoryList"></div>
+
+    <div class="footer-card">
+      <div class="profile-row">
+        <div class="avatar"></div>
+        <div>
+          <div class="profile-name">Laurens</div>
+          <div class="profile-sub">Online</div>
+        </div>
+        <div style="margin-left:auto">
+          <span class="badge">Pro</span>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <span id="sidebarStatus">Solvera is ready</span>
+        <span id="sidebarModel">gpt-4.1</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="center">
+    <div class="center-top">
+      <div class="desktop-topbar">
+        <div class="greeting">
+          <div class="big">Wat wil je vandaag bouwen?</div>
+          <div class="small">Een companion die praat, bouwt en onthoudt.</div>
+        </div>
+        <button class="voice-btn" id="voiceModeBtn">🎙 Voice Mode</button>
+      </div>
+
+      <div class="mobile-topbar">
+        <div class="mobile-brand">
+          <div class="logo-mark" style="width:40px;height:40px"></div>
+          <div class="brand-name" style="font-size:14px">SOLVERA</div>
+        </div>
+        <div class="mobile-top-actions">
+          <button class="brand-action" id="mobileSearchBtn" title="Search">⌕</button>
+          <button class="brand-action" id="mobilePlusBtn" title="New">＋</button>
+        </div>
+      </div>
+
+      <div class="mobile-status-card">
+        <div class="logo-mark" style="width:56px;height:56px;flex:0 0 auto"></div>
+        <div class="mobile-status-text">
+          <div class="title">Agent Status <span style="color:var(--green);font-weight:600">● Actief</span></div>
+          <div class="sub" id="mobileStatusSub">Bezig met bouwen...</div>
+        </div>
+        <div class="progress-ring" id="mobileRing" data-label="72%" style="--p:72%"></div>
+      </div>
+
+      <div class="mobile-tabs">
+        <button class="m-tab active" data-mobile-tab="chat">Chat</button>
+        <button class="m-tab" data-mobile-tab="workspace">Workspace</button>
+      </div>
+    </div>
+
+    <div class="feed-wrap">
+      <div class="feed" id="feed">
+        <div class="row bot">
+          <div class="bot-badge"></div>
+          <div class="bubble-wrap">
+            <div class="msg-meta"><strong>Solvera</strong><span>online</span></div>
+            <div class="bubble bot" id="welcomeBubble">
+              Waar wil je aan bouwen?
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-switcher">
+      <button class="chip" data-chip="/memory">/memory</button>
+      <button class="chip" data-chip="/projects">/projects</button>
+      <button class="chip" data-chip="/analyze">/analyze</button>
+      <button class="chip" data-chip="/code">/code</button>
+      <button class="chip" data-chip="/workspace">/workspace</button>
+    </div>
+
+    <div class="composer">
+      <div class="composer-row">
+        <button class="plus-btn" id="attachBtn" title="Attach">＋</button>
+        <div class="input-wrap">
+          <textarea id="input" class="input" rows="1" placeholder="Stel een vraag of geef een opdracht..."></textarea>
+        </div>
+        <button class="mic-btn" id="micBtn" title="Voice">🎙</button>
+        <button class="send-btn" id="sendBtn" title="Send">➤</button>
+      </div>
+      <div class="status-line">
+        <div class="status-chip"><span class="status-dot"></span><span id="statusText">Solvera is ready</span></div>
+        <div id="hintText">Enter = send</div>
+      </div>
+    </div>
+    <div class="mobile-space"></div>
+  </main>
+
+  <aside class="workspace" id="workspacePanel">
+    <div class="workspace-head">
+      <div class="workspace-title">
+        <div class="big">Agent Workspace <span class="badge"><span class="dot"></span> Live</span></div>
+        <div class="sub">Solving. Building. Creating.</div>
+      </div>
+      <div class="workspace-tools">
+        <button class="icon-btn" id="downloadBtn" title="Download">⇩</button>
+        <button class="icon-btn" id="workspaceCloseBtn" title="Close">✕</button>
+      </div>
+    </div>
+
+    <div class="workspace-card">
+      <div class="workspace-status">
+        <div class="left">
+          <div class="progress-ring" id="progressRing" data-label="72%" style="--p:72%"></div>
+          <div class="workspace-copy">
+            <div class="state" id="agentState">Actief</div>
+            <div class="muted" id="agentStateSub">Bezig met bouwen...</div>
+          </div>
+        </div>
+        <div class="badge"><span class="dot"></span><span id="taskStateLabel">Running</span></div>
+      </div>
+
+      <div class="workspace-tabs">
+        <button class="tab active" data-tab="terminal">Terminal</button>
+        <button class="tab" data-tab="files">Bestanden</button>
+        <button class="tab" data-tab="preview">Preview</button>
+        <button class="tab" data-tab="logs">Logs</button>
+      </div>
+
+      <div class="tab-panes">
+        <div class="pane active" data-pane="terminal">
+          <pre class="terminal" id="terminal">> idle</pre>
+        </div>
+        <div class="pane" data-pane="files">
+          <div class="file-list" id="filesList"></div>
+        </div>
+        <div class="pane" data-pane="preview">
+          <iframe class="preview-iframe" id="preview"></iframe>
+        </div>
+        <div class="pane" data-pane="logs">
+          <div class="logs-list" id="logsList"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div id="footerInfo">Workspace ready</div>
+      <div class="footer-actions">
+        <button class="small-btn" id="refreshBtn">Refresh</button>
+        <button class="small-btn" id="openFilesBtn">Files</button>
+      </div>
+    </div>
+  </aside>
+
+  <nav class="mobile-bottom-nav">
+    <button class="nav-item active" data-nav="chat">
+      <div class="orb">💬</div>
+      <span>Chat</span>
+    </button>
+    <button class="nav-item" data-nav="workspace">
+      <div class="orb">⬚</div>
+      <span>Workspace</span>
+    </button>
+    <button class="nav-item core" data-nav="core">
+      <div class="orb"></div>
+      <span>Core</span>
+    </button>
+    <button class="nav-item" data-nav="memory">
+      <div class="orb">🧠</div>
+      <span>Memory</span>
+    </button>
+    <button class="nav-item" data-nav="profile">
+      <div class="orb">☺</div>
+      <span>Profile</span>
+    </button>
+  </nav>
+
+  <div class="overlay" id="overlay">
+    <div class="modal" id="loginModal">
+      <div class="modal-card">
+        <div class="modal-title">Unlock Solvera</div>
+        <div class="modal-sub">Voer je admin password in om de sessie te openen.</div>
+        <div class="modal-row">
+          <input id="passwordInput" class="modal-input" type="password" placeholder="Admin password" />
+          <button class="send-btn" id="unlockBtn" style="width:92px;height:48px">Unlock</button>
+        </div>
+        <div class="modal-error" id="loginError"></div>
+      </div>
+    </div>
+
+    <div class="modal" id="fileModal" style="display:none">
+      <div class="modal-card" style="width:min(94vw, 760px)">
+        <div class="modal-title" id="fileModalTitle">File</div>
+        <div class="modal-sub" id="fileModalMeta"></div>
+        <div class="file-modal-body">
+          <div class="file-content" id="fileModalContent"></div>
+          <div class="file-modal-actions">
+            <button class="small-btn" id="copyFileBtn">Copy</button>
+            <button class="small-btn" id="closeFileBtn">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="memoryModal" style="display:none">
+      <div class="modal-card">
+        <div class="modal-title">Memory</div>
+        <div class="modal-sub">Wat Solvera onthoudt.</div>
+        <div id="memoryModalContent" style="display:flex;flex-direction:column;gap:10px"></div>
+        <div class="file-modal-actions" style="margin-top:14px">
+          <button class="small-btn" id="closeMemoryBtn">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="profileModal" style="display:none">
+      <div class="modal-card">
+        <div class="modal-title">Profile</div>
+        <div class="modal-sub">Solvera companion + builder mode.</div>
+        <div class="log-item">
+          <div>Laurens</div>
+          <div class="t">Online • Pro</div>
+        </div>
+        <div style="height:10px"></div>
+        <div class="log-item">
+          <div id="profileStats">Memory / Chats / Files</div>
+          <div class="t">Session active</div>
+        </div>
+        <div class="file-modal-actions" style="margin-top:14px">
+          <button class="small-btn" id="closeProfileBtn">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="workspaceMobileModal" style="display:none">
+      <div class="modal-card" style="width:min(96vw, 760px)">
+        <div class="modal-title">Agent Workspace</div>
+        <div class="modal-sub">Terminal, files, preview and logs.</div>
+        <div id="workspaceMobileHost"></div>
+        <div class="file-modal-actions" style="margin-top:14px">
+          <button class="small-btn" id="closeWorkspaceMobileBtn">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <input id="filePicker" type="file" accept="image/*" hidden />
+</div>
+
+<script>
+const API = location.origin;
+
+const els = {
+  app: document.getElementById("app"),
+  sidebar: document.querySelector(".sidebar"),
+  workspace: document.getElementById("workspacePanel"),
+  feed: document.getElementById("feed"),
+  chatList: document.getElementById("chatList"),
+  memoryList: document.getElementById("memoryList"),
+  input: document.getElementById("input"),
+  sendBtn: document.getElementById("sendBtn"),
+  micBtn: document.getElementById("micBtn"),
+  attachBtn: document.getElementById("attachBtn"),
+  downloadBtn: document.getElementById("downloadBtn"),
+  newChatBtn: document.getElementById("newChatBtn"),
+  refreshBtn: document.getElementById("refreshBtn"),
+  openFilesBtn: document.getElementById("openFilesBtn"),
+  voiceModeBtn: document.getElementById("voiceModeBtn"),
+  statusText: document.getElementById("statusText"),
+  sidebarStatus: document.getElementById("sidebarStatus"),
+  sidebarModel: document.getElementById("sidebarModel"),
+  mobileStatusSub: document.getElementById("mobileStatusSub"),
+  mobileRing: document.getElementById("mobileRing"),
+  progressRing: document.getElementById("progressRing"),
+  terminal: document.getElementById("terminal"),
+  filesList: document.getElementById("filesList"),
+  preview: document.getElementById("preview"),
+  logsList: document.getElementById("logsList"),
+  footerInfo: document.getElementById("footerInfo"),
+  agentState: document.getElementById("agentState"),
+  agentStateSub: document.getElementById("agentStateSub"),
+  taskStateLabel: document.getElementById("taskStateLabel"),
+  hintText: document.getElementById("hintText"),
+  mobileTabs: [...document.querySelectorAll(".m-tab")],
+  mobileNav: [...document.querySelectorAll(".nav-item")],
+  tabs: [...document.querySelectorAll(".tab")],
+  panes: [...document.querySelectorAll(".pane")],
+  overlay: document.getElementById("overlay"),
+  loginModal: document.getElementById("loginModal"),
+  loginError: document.getElementById("loginError"),
+  passwordInput: document.getElementById("passwordInput"),
+  unlockBtn: document.getElementById("unlockBtn"),
+  fileModal: document.getElementById("fileModal"),
+  fileModalTitle: document.getElementById("fileModalTitle"),
+  fileModalMeta: document.getElementById("fileModalMeta"),
+  fileModalContent: document.getElementById("fileModalContent"),
+  copyFileBtn: document.getElementById("copyFileBtn"),
+  closeFileBtn: document.getElementById("closeFileBtn"),
+  memoryModal: document.getElementById("memoryModal"),
+  memoryModalContent: document.getElementById("memoryModalContent"),
+  closeMemoryBtn: document.getElementById("closeMemoryBtn"),
+  profileModal: document.getElementById("profileModal"),
+  closeProfileBtn: document.getElementById("closeProfileBtn"),
+  workspaceMobileModal: document.getElementById("workspaceMobileModal"),
+  workspaceMobileHost: document.getElementById("workspaceMobileHost"),
+  closeWorkspaceMobileBtn: document.getElementById("closeWorkspaceMobileBtn"),
+  filePicker: document.getElementById("filePicker"),
+  mobileSearchBtn: document.getElementById("mobileSearchBtn"),
+  mobilePlusBtn: document.getElementById("mobilePlusBtn"),
+  sidebarOpenBtn: document.getElementById("sidebarOpenBtn"),
+};
+
+const state = {
+  tokenReady: false,
+  currentChatId: localStorage.getItem("solvera_chat_id") || "",
+  chats: [],
+  memory: null,
+  files: [],
+  task: null,
+  taskPoller: null,
+  sending: false,
+  streamAbort: null,
+  activeWorkspaceTab: "terminal",
+  currentFileContent: "",
+  currentFileName: "",
+};
+
+const memoryQuickStore = new Set(JSON.parse(localStorage.getItem("solvera_memory_quick") || "[]").slice(0,50));
+
+function saveQuickStore() {
+  localStorage.setItem("solvera_memory_quick", JSON.stringify([...memoryQuickStore].slice(-50)));
+}
+
+function setStatus(text) {
+  els.statusText.textContent = text;
+  els.sidebarStatus.textContent = text;
+  els.mobileStatusSub.textContent = text === "Solvera is ready" ? "Bezig met bouwen..." : text;
+  els.agentState.textContent = text.includes("building") ? "Building" : text.includes("thinking") ? "Thinking" : text.includes("error") ? "Error" : "Actief";
+  els.agentStateSub.textContent = text;
+  els.taskStateLabel.textContent = state.task?.status ? state.task.status.toUpperCase() : "Ready";
+}
+
+function updateRing(el, pct) {
+  const v = Math.max(0, Math.min(100, pct || 0));
+  el.style.setProperty("--p", `${v}%`);
+  el.dataset.label = `${Math.round(v)}%`;
+}
+
+function setAllProgress(pct) {
+  updateRing(els.mobileRing, pct);
+  updateRing(els.progressRing, pct);
+}
+
+function setWorkspaceTab(tab) {
+  state.activeWorkspaceTab = tab;
+  els.tabs.forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tab));
+  els.panes.forEach(p => p.classList.toggle("active", p.dataset.pane === tab));
+}
+
+function setMobileView(view) {
+  document.body.classList.toggle("workspace-open", view === "workspace");
+  els.mobileNav.forEach(btn => btn.classList.toggle("active", btn.dataset.nav === view || (view === "chat" && btn.dataset.nav === "chat")));
+}
+
+function openOverlayModal(modal) {
+  els.overlay.classList.add("open");
+  [els.loginModal, els.fileModal, els.memoryModal, els.profileModal, els.workspaceMobileModal].forEach(m => m.style.display = "none");
+  modal.style.display = "grid";
+}
+
+function closeOverlay() {
+  els.overlay.classList.remove("open");
+  [els.loginModal, els.fileModal, els.memoryModal, els.profileModal, els.workspaceMobileModal].forEach(m => m.style.display = "none");
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#39;");
+}
+
+function formatTime() {
+  return new Intl.DateTimeFormat("nl-NL", { hour: "2-digit", minute: "2-digit" }).format(new Date());
+}
+
+function markdownToHtml(text) {
+  const safe = escapeHtml(String(text || ""));
+  const blocks = [];
+  let work = safe.replace(/```([\s\S]*?)```/g, (_, code) => {
+    const id = blocks.length;
+    blocks.push(`<pre style="margin:0;white-space:pre-wrap;overflow:auto;padding:12px;border-radius:14px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.06)"><code>${code.trim()}</code></pre>`);
+    return `@@CODE${id}@@`;
+  });
+
+  work = work
+    .replace(/^### (.*)$/gm, "<h3 style=\"margin:.4em 0 .2em;font-size:1.08em\">$1</h3>")
+    .replace(/^## (.*)$/gm, "<h2 style=\"margin:.45em 0 .2em;font-size:1.2em\">$1</h2>")
+    .replace(/^# (.*)$/gm, "<h1 style=\"margin:.5em 0 .2em;font-size:1.35em\">$1</h1>")
+    .replace(/^\- (.*)$/gm, "• $1")
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.*?)\*/g, "<em>$1</em>")
+    .replace(/\n/g, "<br>");
+
+  blocks.forEach((html, i) => {
+    work = work.replace(`@@CODE${i}@@`, html);
+  });
+  return work;
+}
+
+function scrollFeedToBottom(force = false) {
+  requestAnimationFrame(() => {
+    els.feed.scrollTo({ top: els.feed.scrollHeight, behavior: force ? "auto" : "smooth" });
+  });
+}
+
+function createRow(role, avatar = false) {
+  const row = document.createElement("div");
+  row.className = `row ${role}`;
+  const wrap = document.createElement("div");
+  wrap.className = "bubble-wrap";
+  if (avatar) {
+    const meta = document.createElement("div");
+    meta.className = "msg-meta";
+    meta.innerHTML = `<strong>Solvera</strong><span>${role === "user" ? "" : "online"}</span>`;
+    row.appendChild(document.createElement("div")).className = "bot-badge";
+    wrap.appendChild(meta);
+  }
+  row.appendChild(wrap);
+  return { row, wrap };
+}
+
+function appendUserMessage(text) {
+  const { row, wrap } = createRow("user");
+  const bubble = document.createElement("div");
+  bubble.className = "bubble user";
+  bubble.innerHTML = `${markdownToHtml(text)}<div class="time">${formatTime()} ✓✓</div>`;
+  wrap.appendChild(bubble);
+  els.feed.appendChild(row);
+  scrollFeedToBottom();
+  saveChatMessageLocal(text, "user");
+  return bubble;
+}
+
+function appendAssistantBubble(text = "") {
+  const { row, wrap } = createRow("bot", true);
+  const bubble = document.createElement("div");
+  bubble.className = "bubble bot";
+  bubble.innerHTML = text ? markdownToHtml(text) : `<div class="typing"><span></span><span></span><span></span></div>`;
+  wrap.appendChild(bubble);
+  els.feed.appendChild(row);
+  scrollFeedToBottom(true);
+  return bubble;
+}
+
+function renderThinkingCard(steps, progress = 0) {
+  let card = document.getElementById("thinkingCard");
+  if (!card) {
+    card = document.createElement("div");
+    card.className = "thinking-card";
+    card.id = "thinkingCard";
+    els.feed.appendChild(card);
+  }
+  const stepHtml = steps.map(s => {
+    const cls = s.state === "done" ? "step done" : s.state === "active" ? "step active" : "step";
+    const stateLabel = s.state === "done" ? "✓" : s.state === "active" ? "●" : "○";
+    return `<div class="${cls}"><div class="left"><div class="bullet"></div><div>${escapeHtml(s.label)}</div></div><div class="state">${stateLabel}</div></div>`;
+  }).join("");
+  card.innerHTML = `
+    <div class="thinking-head">Thinking • ${progress}%</div>
+    <div class="thinking-list">${stepHtml}</div>
+  `;
+  scrollFeedToBottom(true);
+  return card;
+}
+
+function renderFileCard(file) {
+  const card = document.createElement("div");
+  card.className = "file-card";
+  card.innerHTML = `
+    <div class="file-left">
+      <div class="file-icon">📄</div>
+      <div>
+        <div class="file-name">${escapeHtml(file.name)}</div>
+        <div class="file-sub">${prettySize(file.size || (file.content || "").length)} • ${escapeHtml((file.name.split(".").pop() || "").toUpperCase())}</div>
+      </div>
+    </div>
+    <div class="file-actions">
+      <button class="icon-btn" title="Preview">👁</button>
+      <button class="icon-btn" title="Download">⇩</button>
+    </div>
+  `;
+  card.querySelectorAll("button")[0].addEventListener("click", () => openFileModal(file));
+  card.querySelectorAll("button")[1].addEventListener("click", () => downloadBlob(file.name, file.content || ""));
+  return card;
+}
+
+function prettySize(bytes) {
+  const n = Number(bytes || 0);
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  return `${(n / 1024 / 1024).toFixed(1)} MB`;
+}
+
+function saveChatMessageLocal(content, role, type = "text", meta = null) {
+  if (!state.currentChatId) return;
+  fetch(`${API}/api/chats/${encodeURIComponent(state.currentChatId)}/messages`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ role, content, type, meta })
+  }).catch(()=>{});
+}
+
+function setTerminal(lines) {
+  els.terminal.textContent = lines.length ? lines.map(line => `> ${line}`).join("\n") : "> idle";
+  els.logsList.innerHTML = "";
+  lines.forEach(line => {
+    const div = document.createElement("div");
+    div.className = "log-item";
+    div.innerHTML = `${escapeHtml(line)}<div class="t">${formatTime()}</div>`;
+    els.logsList.appendChild(div);
+  });
+  els.footerInfo.textContent = lines.length ? lines[lines.length - 1] : "Workspace ready";
+}
+
+function renderFiles(files) {
+  els.filesList.innerHTML = "";
+  if (!files.length) {
+    els.filesList.innerHTML = `<div class="log-item">No files</div>`;
+    return;
+  }
+  files.forEach(file => {
+    const row = document.createElement("div");
+    row.className = "file-row";
+    row.innerHTML = `
+      <div>
+        <div class="name">${escapeHtml(file.name)}</div>
+        <div class="size">${prettySize(file.size || (file.content || "").length)}</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="icon-btn" title="Open">👁</button>
+        <button class="icon-btn" title="Copy">⧉</button>
+      </div>
+    `;
+    row.querySelectorAll("button")[0].addEventListener("click", () => openFileModal(file));
+    row.querySelectorAll("button")[1].addEventListener("click", async () => {
+      await navigator.clipboard.writeText(file.content || "");
+      setStatus("File copied");
+      setTimeout(() => setStatus("Solvera is ready"), 900);
+    });
+    row.addEventListener("dblclick", () => openFileModal(file));
+    els.filesList.appendChild(row);
+  });
+}
+
+function renderPreview(files) {
+  const html = files.find(f => String(f.name).toLowerCase().endsWith(".html"));
+  if (!html) {
+    els.preview.srcdoc = `<html><body style="font-family:system-ui;padding:20px;background:#111;color:#fff">No preview</body></html>`;
+    return;
+  }
+  els.preview.srcdoc = html.content || "";
+}
+
+function openFileModal(file) {
+  state.currentFileName = file.name;
+  state.currentFileContent = file.content || "";
+  els.fileModalTitle.textContent = file.name;
+  els.fileModalMeta.textContent = `${prettySize(file.size || (file.content || "").length)} • ${file.updatedAt || ""}`;
+  els.fileModalContent.textContent = file.content || "";
+  openOverlayModal(els.fileModal);
+}
+
+function openMemoryModal() {
+  const mem = state.memory?.memory || state.memory || {};
+  const parts = [
+    ["Name", mem.name || "Laurens"],
+    ["Projects", (mem.projects || []).join(", ") || "None"],
+    ["Goals", (mem.goals || []).join(", ") || "None"],
+    ["Preferences", (mem.preferences || []).join(", ") || "None"],
+    ["Notes", (mem.notes || []).join(" | ") || "None"]
+  ];
+  els.memoryModalContent.innerHTML = "";
+  parts.forEach(([k, v]) => {
+    const box = document.createElement("div");
+    box.className = "log-item";
+    box.innerHTML = `<strong>${escapeHtml(k)}</strong><div class="t">${escapeHtml(v)}</div>`;
+    els.memoryModalContent.appendChild(box);
+  });
+  openOverlayModal(els.memoryModal);
+}
+
+function openProfileModal() {
+  const chats = state.chats.length;
+  const files = state.files.length;
+  const notes = (state.memory?.memory?.notes || state.memory?.notes || []).length;
+  document.getElementById("profileStats").textContent = `${notes} notes / ${chats} chats / ${files} files`;
+  openOverlayModal(els.profileModal);
+}
+
+function openWorkspaceMobile() {
+  const host = els.workspace.cloneNode(true);
+  host.id = "workspaceMobileClone";
+  host.style.display = "block";
+  host.style.position = "static";
+  host.style.transform = "none";
+  host.style.padding = "0";
+  host.style.borderLeft = "none";
+  host.style.width = "100%";
+  host.style.background = "transparent";
+  host.querySelector("#workspaceCloseBtn")?.remove();
+  els.workspaceMobileHost.innerHTML = "";
+  els.workspaceMobileHost.appendChild(host);
+  host.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => setWorkspaceTab(btn.dataset.tab)));
+  host.querySelector("#downloadBtn")?.addEventListener("click", downloadProject);
+  host.querySelector("#refreshBtn")?.addEventListener("click", refreshWorkspace);
+  host.querySelector("#openFilesBtn")?.addEventListener("click", () => setWorkspaceTab("files"));
+  openOverlayModal(els.workspaceMobileModal);
+}
+
+function updateMemorySidebar() {
+  els.memoryList.innerHTML = "";
+  const mem = state.memory?.memory || state.memory || {};
+  const items = [
+    ...(mem.projects || []).slice(0, 3).map(t => ({ label: t, icon: "P" })),
+    ...(mem.goals || []).slice(0, 3).map(t => ({ label: t, icon: "G" })),
+    ...(mem.notes || []).slice(0, 3).map(t => ({ label: t, icon: "N" }))
+  ];
+  if (!items.length) {
+    const empty = document.createElement("div");
+    empty.className = "list-item";
+    empty.innerHTML = `<div class="mini-icon">🧠</div><div>No memory yet</div>`;
+    els.memoryList.appendChild(empty);
+    return;
+  }
+  items.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "list-item";
+    div.innerHTML = `<div class="mini-icon">${escapeHtml(item.icon)}</div><div style="min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(item.label)}</div>`;
+    div.addEventListener("click", () => {
+      els.input.value = `onthoud dit: ${item.label}`;
+      autoGrow();
+    });
+    els.memoryList.appendChild(div);
+  });
+}
+
+function updateChatSidebar() {
+  els.chatList.innerHTML = "";
+  if (!state.chats.length) {
+    const empty = document.createElement("div");
+    empty.className = "list-item";
+    empty.innerHTML = `<div class="mini-icon">＋</div><div>Nieuwe chat</div>`;
+    els.chatList.appendChild(empty);
+    return;
+  }
+  state.chats.slice(0, 10).forEach(chat => {
+    const div = document.createElement("div");
+    div.className = `list-item ${chat.id === state.currentChatId ? "active" : ""}`;
+    div.innerHTML = `
+      <div class="mini-icon">✦</div>
+      <div style="min-width:0">
+        <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(chat.title)}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.42)">${chat.count || 0} msgs</div>
+      </div>
+      <div class="meta">${escapeHtml(chat.updatedAt ? new Date(chat.updatedAt).toLocaleDateString("nl-NL") : "")}</div>
+    `;
+    div.addEventListener("click", () => openChat(chat.id));
+    els.chatList.appendChild(div);
+  });
+}
+
+async function openChat(chatId) {
+  state.currentChatId = chatId;
+  localStorage.setItem("solvera_chat_id", chatId);
+  updateChatSidebar();
+  await loadChatMessages(chatId);
+}
+
+function resetFeed() {
+  els.feed.innerHTML = "";
+  const row = document.createElement("div");
+  row.className = "row bot";
+  row.innerHTML = `
+    <div class="bot-badge"></div>
+    <div class="bubble-wrap">
+      <div class="msg-meta"><strong>Solvera</strong><span>online</span></div>
+      <div class="bubble bot">Waar wil je aan bouwen?</div>
+    </div>
+  `;
+  els.feed.appendChild(row);
+}
+
+async function loadChatMessages(chatId) {
+  if (!chatId) {
+    resetFeed();
+    return;
+  }
+  try {
+    const r = await fetch(`${API}/api/chats/${encodeURIComponent(chatId)}`, { credentials: "include" });
+    if (!r.ok) throw new Error();
+    const data = await r.json();
+    const chat = data.chat || data;
+    els.feed.innerHTML = "";
+    (chat.messages || []).forEach(m => {
+      if (m.type === "agent") {
+        const card = document.createElement("div");
+        card.className = "thinking-card";
+        card.innerHTML = `
+          <div class="thinking-head">Agent • ${escapeHtml(m.content)}</div>
+          <div class="thinking-list">
+            ${(m.meta?.plan || []).map(s => `<div class="step done"><div class="left"><div class="bullet"></div><div>${escapeHtml(s)}</div></div><div class="state">✓</div></div>`).join("")}
+          </div>
+        `;
+        els.feed.appendChild(card);
+      } else if (m.role === "user") {
+        const row = document.createElement("div");
+        row.className = "row user";
+        row.innerHTML = `
+          <div class="bubble-wrap">
+            <div class="bubble user">${markdownToHtml(m.content)}<div class="time">${new Date(m.createdAt || Date.now()).toLocaleTimeString("nl-NL",{hour:"2-digit",minute:"2-digit"})} ✓✓</div></div>
+          </div>
+        `;
+        els.feed.appendChild(row);
+      } else {
+        const row = document.createElement("div");
+        row.className = "row bot";
+        row.innerHTML = `
+          <div class="bot-badge"></div>
+          <div class="bubble-wrap">
+            <div class="msg-meta"><strong>Solvera</strong><span>${new Date(m.createdAt || Date.now()).toLocaleTimeString("nl-NL",{hour:"2-digit",minute:"2-digit"})}</span></div>
+            <div class="bubble bot">${markdownToHtml(m.content)}</div>
+          </div>
+        `;
+        els.feed.appendChild(row);
+      }
+    });
+    if (!chat.messages?.length) resetFeed();
+    scrollFeedToBottom(true);
+  } catch {
+    resetFeed();
+  }
+}
+
+function autoGrow() {
+  els.input.style.height = "auto";
+  els.input.style.height = Math.min(els.input.scrollHeight, 132) + "px";
+}
+
+async function fetchJSON(url, options = {}) {
+  const res = await fetch(url, {
+    credentials: "include",
+    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+    ...options
+  });
+  const text = await res.text();
+  let data = {};
+  try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
+  if (!res.ok) throw Object.assign(new Error(data.error || text || "Request failed"), { status: res.status, data });
+  return data;
+}
+
+async function loginWithPassword(password) {
+  const res = await fetch(`${API}/api/auth/login`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password })
+  });
+  const text = await res.text();
+  let data = {};
+  try { data = text ? JSON.parse(text) : {}; } catch {}
+  if (!res.ok) throw new Error(data.error || "Login failed");
+  state.tokenReady = true;
+  localStorage.setItem("solvera_password", password);
+}
+
+async function bootstrapAuth() {
+  const saved = localStorage.getItem("solvera_password");
+  if (saved) {
+    try {
+      await loginWithPassword(saved);
+      closeOverlay();
+      return;
+    } catch {}
+  }
+  openOverlayModal(els.loginModal);
+}
+
+async function boot() {
+  try {
+    await fetch(`${API}/api/health`, { credentials: "include" });
+  } catch {}
+  await bootstrapAuth();
+  await refreshEverything();
+  if (!state.currentChatId) {
+    const chat = await fetchJSON(`${API}/api/chats`, { method: "POST", body: JSON.stringify({ title: "Nieuwe chat" }) });
+    state.currentChatId = chat.chat.id;
+    localStorage.setItem("solvera_chat_id", state.currentChatId);
+  }
+  await openChat(state.currentChatId);
+  setStatus("Solvera is ready");
+}
+
+async function refreshEverything() {
+  const [sys, chats] = await Promise.all([
+    fetchJSON(`${API}/api/system`),
+    fetchJSON(`${API}/api/chats`)
+  ]);
+  state.memory = sys;
+  state.chats = chats.chats || [];
+  state.files = sys.workspaceFiles || [];
+  updateChatSidebar();
+  updateMemorySidebar();
+  renderFiles(state.files);
+  setTerminal(["idle"]);
+  setAllProgress(72);
+  els.sidebarModel.textContent = "gpt-4.1";
+}
+
+async function refreshWorkspace() {
+  try {
+    const sys = await fetchJSON(`${API}/api/system`);
+    state.memory = sys;
+    state.files = sys.workspaceFiles || [];
+    renderFiles(state.files);
+    els.logsList.innerHTML = "";
+    (sys.activity || []).slice(0,10).forEach(act => {
+      const div = document.createElement("div");
+      div.className = "log-item";
+      div.innerHTML = `${escapeHtml(act.text || "")}<div class="t">${new Date(act.createdAt || Date.now()).toLocaleString("nl-NL")}</div>`;
+      els.logsList.appendChild(div);
+    });
+    if (sys.tasks?.length) {
+      const latest = sys.tasks[0];
+      if (latest?.status) {
+        setAllProgress(latest.progress || 0);
+        state.task = latest;
+        setStatus(latest.status === "done" ? "Solvera is ready" : `${latest.status}...`);
+      }
+    }
+  } catch {}
+}
+
+async function newChat() {
+  const chat = await fetchJSON(`${API}/api/chats`, {
+    method: "POST",
+    body: JSON.stringify({ title: "Nieuwe chat" })
+  });
+  state.currentChatId = chat.chat.id;
+  localStorage.setItem("solvera_chat_id", state.currentChatId);
+  updateChatSidebar();
+  resetFeed();
+}
+
+function isAgentIntent(text) {
+  const t = String(text || "").toLowerCase();
+  return /\/build|\/agent|\/code|maak|build|website|app|fix|debug|landing|dashboard|project/.test(t);
+}
+
+function isMemoryIntent(text) {
+  return String(text || "").toLowerCase().startsWith("/memory");
+}
+
+function isWorkspaceIntent(text) {
+  return String(text || "").toLowerCase().startsWith("/workspace");
+}
+
+function isImageIntent(text) {
+  return String(text || "").toLowerCase().startsWith("/analyze");
+}
+
+function isImageGenIntent(text) {
+  return String(text || "").toLowerCase().startsWith("/image");
+}
+
+function isChatCommand(text) {
+  return String(text || "").trim().startsWith("/");
+}
+
+async function rememberAutomatically(text) {
+  if (!text || text.length < 20) return;
+  if (isChatCommand(text)) return;
+  if (memoryQuickStore.has(text)) return;
+  memoryQuickStore.add(text);
+  saveQuickStore();
+  fetch(`${API}/api/memory`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ type: "note", value: text })
+  }).catch(()=>{});
+}
+
+async function streamChat(text) {
+  const bubble = appendAssistantBubble("");
+  bubble.innerHTML = `<div class="typing"><span></span><span></span><span></span></div>`;
+  let full = "";
+  let buffer = "";
+  let ticking = false;
+  const ctrl = new AbortController();
+  state.streamAbort = ctrl;
+
+  function flush() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      if (buffer) {
+        full += buffer;
+        buffer = "";
+        bubble.innerHTML = `${markdownToHtml(full)}<div class="time">${formatTime()}</div>`;
+        scrollFeedToBottom();
+      }
+      ticking = false;
+    });
+  }
+
+  const res = await fetch(`${API}/api/stream`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ input: text, chatId: state.currentChatId }),
+    signal: ctrl.signal
+  });
+
+  if (!res.ok || !res.body) {
+    const fallback = await res.text();
+    bubble.innerHTML = `${markdownToHtml(fallback)}<div class="time">${formatTime()}</div>`;
+    return fallback;
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder("utf-8");
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    flush();
+  }
+  if (buffer) {
+    full += buffer;
+    buffer = "";
+  }
+  bubble.innerHTML = `${markdownToHtml(full)}<div class="time">${formatTime()}</div>`;
+  if (state.currentChatId) saveChatMessageLocal(full, "assistant", "text");
+  return full;
+}
+
+function setTaskBubble(task) {
+  let old = document.getElementById("taskBubble");
+  if (old) old.remove();
+  const card = renderThinkingCard(task.steps || [], task.progress || 0);
+  card.id = "taskBubble";
+  const summary = document.createElement("div");
+  summary.className = "bubble bot";
+  summary.id = "taskSummaryBubble";
+  summary.innerHTML = `${markdownToHtml(task.result?.summary || task.summary || "Solvera werkt aan je verzoek")}<div class="time">${formatTime()}</div>`;
+  els.feed.appendChild(card);
+  els.feed.appendChild(summary);
+  scrollFeedToBottom(true);
+}
+
+function updateTaskView(taskData) {
+  const task = taskData.task || taskData;
+  state.task = task;
+  const progress = task.progress || 0;
+  setAllProgress(progress);
+  setStatus(task.status === "done" ? "Solvera is ready" : `${task.status}...`);
+  const steps = [
+    { label: "Analyseren", state: progress >= 15 ? "done" : progress >= 5 ? "active" : "todo" },
+    { label: "Plannen", state: progress >= 30 ? "done" : progress >= 15 ? "active" : "todo" },
+    { label: "Bouwen", state: progress >= 55 ? "done" : progress >= 30 ? "active" : "todo" },
+    { label: "Optimaliseren", state: progress >= 85 ? "done" : progress >= 55 ? "active" : "todo" },
+    { label: "Afsluiten", state: progress >= 100 ? "done" : progress >= 85 ? "active" : "todo" }
+  ];
+  renderThinkingCard(steps, progress);
+  const terminalText = (task.logs || []).slice(-200);
+  setTerminal(terminalText);
+  if (task.result?.files) {
+    renderFiles(task.result.files);
+    renderPreview(task.result.files);
+  }
+  if (task.status === "done") {
+    const summary = task.result?.summary || "Klaar.";
+    let summaryBubble = document.getElementById("taskSummaryBubble");
+    if (!summaryBubble) {
+      summaryBubble = appendAssistantBubble(summary);
+      summaryBubble.id = "taskSummaryBubble";
+    } else {
+      summaryBubble.innerHTML = `${markdownToHtml(summary)}<div class="time">${formatTime()}</div>`;
+    }
+    saveChatMessageLocal(summary, "assistant", "agent", { plan: task.result?.plan || [], files: (task.result?.files || []).map(f => f.name) });
+  }
+}
+
+async function runAgent(text) {
+  if (state.taskPoller) clearInterval(state.taskPoller);
+  setStatus("building...");
+  const start = await fetchJSON(`${API}/api/task/start`, {
+    method: "POST",
+    body: JSON.stringify({ input: text, chatId: state.currentChatId })
+  });
+  const taskId = start.taskId;
+  const running = await fetchJSON(`${API}/api/task/run`, {
+    method: "POST",
+    body: JSON.stringify({ taskId })
+  }).catch(async e => {
+    try {
+      const fallback = await fetchJSON(`${API}/api/agent`, {
+        method: "POST",
+        body: JSON.stringify({ input: text, chatId: state.currentChatId })
+      });
+      renderFiles(fallback.files || []);
+      renderPreview(fallback.files || []);
+      setTerminal(fallback.terminal || ["done"]);
+      const summary = fallback.summary || "Done";
+      appendAssistantBubble(summary).id = "taskSummaryBubble";
+      return fallback;
+    } catch {
+      throw e;
+    }
+  });
+
+  if (running?.task) updateTaskView(running);
+  state.taskPoller = setInterval(async () => {
+    try {
+      const poll = await fetchJSON(`${API}/api/task/${taskId}`);
+      updateTaskView(poll);
+      if (poll.task?.status === "done" || poll.task?.status === "error") {
+        clearInterval(state.taskPoller);
+        state.taskPoller = null;
+        state.task = poll.task;
+      }
+    } catch {}
+  }, 900);
+
+  return running?.result?.summary || running?.task?.result?.summary || "Done";
+}
+
+async function analyzeImage(file) {
+  const dataUrl = await readAsDataURL(file);
+  const result = await fetchJSON(`${API}/api/analyze`, {
+    method: "POST",
+    body: JSON.stringify({ imageBase64: dataUrl, prompt: els.input.value.trim() || "Analyseer deze afbeelding" })
+  });
+  appendAssistantBubble(result.result || "Analyse klaar.");
+}
+
+async function imageGen(prompt) {
+  const result = await fetchJSON(`${API}/api/image`, {
+    method: "POST",
+    body: JSON.stringify({ prompt })
+  });
+  if (result.url) {
+    const row = document.createElement("div");
+    row.className = "row bot";
+    row.innerHTML = `
+      <div class="bot-badge"></div>
+      <div class="bubble-wrap">
+        <div class="msg-meta"><strong>Solvera</strong><span>${formatTime()}</span></div>
+        <div class="bubble bot"><img src="${escapeHtml(result.url)}" style="width:100%;border-radius:14px" /></div>
+      </div>
+    `;
+    els.feed.appendChild(row);
+    scrollFeedToBottom(true);
+  }
+  return result;
+}
+
+function readAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function maybeAutoResize() {
+  els.input.style.height = "auto";
+  els.input.style.height = Math.min(els.input.scrollHeight, 136) + "px";
+}
+
+function clearWorkspaceUI() {
+  setTerminal(["idle"]);
+  els.filesList.innerHTML = `<div class="log-item">No files</div>`;
+  els.logsList.innerHTML = "";
+  els.preview.srcdoc = `<html><body style="font-family:system-ui;padding:20px;background:#111;color:#fff">No preview</body></html>`;
+  setAllProgress(72);
+}
+
+async function downloadProject() {
+  window.location.href = `${API}/api/download`;
+}
+
+async function sendCurrent() {
+  if (state.sending) return;
+  const text = els.input.value.trim();
+  if (!text) return;
+  state.sending = true;
+
+  appendUserMessage(text);
+  els.input.value = "";
+  maybeAutoResize();
+  await rememberAutomatically(text);
+
+  try {
+    if (isMemoryIntent(text)) {
+      const value = text.replace(/^\/memory\s*/i, "").trim();
+      if (!value) {
+        els.input.value = "onthoud dit: ";
+        maybeAutoResize();
+        els.input.focus();
+      } else {
+        await fetchJSON(`${API}/api/memory`, {
+          method: "POST",
+          body: JSON.stringify({ type: "note", value })
+        });
+        appendAssistantBubble("🧠 Opgeslagen.");
+      }
+    } else if (isWorkspaceIntent(text)) {
+      bodyWorkspaceOpen(true);
+      openWorkspaceMobile();
+    } else if (isImageIntent(text)) {
+      const value = text.replace(/^\/analyze\s*/i, "").trim();
+      if (!value) {
+        els.filePicker.value = "";
+        els.filePicker.click();
+      } else {
+        appendAssistantBubble("Kies een afbeelding.");
+      }
+    } else if (isImageGenIntent(text)) {
+      const prompt = text.replace(/^\/image\s*/i, "").trim();
+      if (!prompt) {
+        appendAssistantBubble("Typ een prompt na /image.");
+      } else {
+        await imageGen(prompt);
+      }
+    } else if (isAgentIntent(text)) {
+      const summary = await runAgent(text);
+      if (summary) appendAssistantBubble(summary);
+    } else {
+      await streamChat(text);
+    }
+    await refreshEverything();
+    updateChatSidebar();
+    updateMemorySidebar();
+    scrollFeedToBottom(true);
+  } catch (err) {
+    appendAssistantBubble(`⚠️ ${escapeHtml(err.message || "Server error")}`);
+    setStatus("error");
+  } finally {
+    state.sending = false;
+    els.input.focus();
+    setTimeout(() => setStatus("Solvera is ready"), 800);
+  }
+}
+
+function bodyWorkspaceOpen(open) {
+  document.body.classList.toggle("workspace-open", open);
+}
+
+function handleMobileNav(target) {
+  if (target === "chat") {
+    bodyWorkspaceOpen(false);
+    setMobileView("chat");
+  } else if (target === "workspace") {
+    bodyWorkspaceOpen(true);
+    setMobileView("workspace");
+    openWorkspaceMobile();
+  } else if (target === "core") {
+    bodyWorkspaceOpen(false);
+    setMobileView("chat");
+    scrollFeedToBottom(true);
+  } else if (target === "memory") {
+    openMemoryModal();
+  } else if (target === "profile") {
+    openProfileModal();
+  }
+}
+
+async function refreshEverything() {
+  const [sys, chats] = await Promise.all([
+    fetchJSON(`${API}/api/system`),
+    fetchJSON(`${API}/api/chats`)
+  ]);
+  state.memory = sys;
+  state.chats = chats.chats || [];
+  state.files = sys.workspaceFiles || [];
+  updateChatSidebar();
+  updateMemorySidebar();
+  renderFiles(state.files);
+  renderPreview(state.files);
+  els.sidebarModel.textContent = sys.models?.chat || "gpt-4.1";
+  els.hintText.textContent = "Enter = send";
+  if (sys.tasks?.length) {
+    const latest = sys.tasks[0];
+    updateTaskView({ task: latest });
+  } else {
+    setStatus("Solvera is ready");
+  }
+  setTerminal(["idle"]);
+}
+
+function setWorkspaceInitialTab() {
+  setWorkspaceTab("terminal");
+}
+
+function bindEvents() {
+  els.sendBtn.addEventListener("click", sendCurrent);
+  els.input.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendCurrent();
+    }
+  });
+  els.input.addEventListener("input", maybeAutoResize);
+
+  els.newChatBtn.addEventListener("click", async () => {
+    await newChat();
+  });
+
+  els.attachBtn.addEventListener("click", () => {
+    els.filePicker.value = "";
+    els.filePicker.click();
+  });
+
+  els.filePicker.addEventListener("change", async () => {
+    const file = els.filePicker.files?.[0];
+    if (!file) return;
+    if (file.type && file.type.startsWith("image/")) {
+      await appendUserMessage("📷 afbeelding");
+      await analyzeImage(file);
+    }
+    els.filePicker.value = "";
+  });
+
+  els.micBtn.addEventListener("click", () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      appendAssistantBubble("Voice is niet ondersteund in deze browser.");
+      return;
+    }
+    const rec = new SR();
+    rec.lang = "nl-NL";
+    rec.interimResults = true;
+    rec.continuous = false;
+    setStatus("listening...");
+    rec.onresult = e => {
+      const transcript = Array.from(e.results).map(r => r[0].transcript).join(" ");
+      els.input.value = transcript;
+      maybeAutoResize();
+    };
+    rec.onend = () => {
+      setStatus("Solvera is ready");
+      if (els.input.value.trim()) sendCurrent();
+    };
+    rec.onerror = () => setStatus("voice error");
+    rec.start();
+  });
+
+  els.voiceModeBtn.addEventListener("click", () => {
+    handleMobileNav("workspace");
+  });
+
+  els.refreshBtn.addEventListener("click", refreshEverything);
+  els.openFilesBtn.addEventListener("click", () => setWorkspaceTab("files"));
+  els.downloadBtn.addEventListener("click", downloadProject);
+  els.workspaceCloseBtn.addEventListener("click", () => {
+    bodyWorkspaceOpen(false);
+    setMobileView("chat");
+  });
+
+  els.sidebarOpenBtn.addEventListener("click", () => {
+    bodyWorkspaceOpen(true);
+    setMobileView("workspace");
+    openWorkspaceMobile();
+  });
+
+  els.mobileSearchBtn.addEventListener("click", () => {
+    els.input.focus();
+  });
+
+  els.mobilePlusBtn.addEventListener("click", () => {
+    els.filePicker.value = "";
+    els.filePicker.click();
+  });
+
+  els.tabs.forEach(btn => {
+    btn.addEventListener("click", () => setWorkspaceTab(btn.dataset.tab));
+  });
+
+  els.mobileTabs.forEach(btn => {
+    btn.addEventListener("click", () => {
+      els.mobileTabs.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      if (btn.dataset.mobileTab === "workspace") {
+        bodyWorkspaceOpen(true);
+        openWorkspaceMobile();
+      } else {
+        bodyWorkspaceOpen(false);
+        setMobileView("chat");
+      }
+    });
+  });
+
+  els.mobileNav.forEach(btn => {
+    btn.addEventListener("click", () => handleMobileNav(btn.dataset.nav));
+  });
+
+  els.unlockBtn.addEventListener("click", async () => {
+    const p = els.passwordInput.value.trim();
+    if (!p) return;
+    try {
+      await loginWithPassword(p);
+      closeOverlay();
+      await refreshEverything();
+      if (!state.currentChatId) {
+        const chat = await fetchJSON(`${API}/api/chats`, { method: "POST", body: JSON.stringify({ title: "Nieuwe chat" }) });
+        state.currentChatId = chat.chat.id;
+        localStorage.setItem("solvera_chat_id", state.currentChatId);
+      }
+      await openChat(state.currentChatId);
+      setStatus("Solvera is ready");
+    } catch (err) {
+      els.loginError.textContent = "Verkeerd wachtwoord of server fout.";
+    }
+  });
+
+  els.passwordInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") els.unlockBtn.click();
+  });
+
+  els.closeFileBtn.addEventListener("click", closeOverlay);
+  els.copyFileBtn.addEventListener("click", async () => {
+    await navigator.clipboard.writeText(state.currentFileContent || "");
+    els.copyFileBtn.textContent = "Copied";
+    setTimeout(() => els.copyFileBtn.textContent = "Copy", 900);
+  });
+
+  els.closeMemoryBtn.addEventListener("click", closeOverlay);
+  els.closeProfileBtn.addEventListener("click", closeOverlay);
+  els.closeWorkspaceMobileBtn.addEventListener("click", () => {
+    closeOverlay();
+    bodyWorkspaceOpen(false);
+    setMobileView("chat");
+  });
+
+  document.querySelectorAll("[data-chip]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const v = btn.dataset.chip;
+      if (v === "/workspace") {
+        bodyWorkspaceOpen(true);
+        openWorkspaceMobile();
+        return;
+      }
+      els.input.value = v === "/code" ? "Schrijf code voor: " : v === "/projects" ? "Welke projecten ken je van mij?" : v === "/memory" ? "onthoud dit: " : v === "/analyze" ? "/analyze " : v;
+      maybeAutoResize();
+      els.input.focus();
+    });
+  });
+
+  document.addEventListener("click", e => {
+    if (e.target === els.overlay) closeOverlay();
+  });
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") {
+      closeOverlay();
+      bodyWorkspaceOpen(false);
+      setMobileView("chat");
+    }
+  });
+}
+
+function closeOverlay() {
+  els.overlay.classList.remove("open");
+  els.loginModal.style.display = "none";
+  els.fileModal.style.display = "none";
+  els.memoryModal.style.display = "none";
+  els.profileModal.style.display = "none";
+  els.workspaceMobileModal.style.display = "none";
+}
+
+function openOverlayModal(modal) {
+  els.overlay.classList.add("open");
+  [els.loginModal, els.fileModal, els.memoryModal, els.profileModal, els.workspaceMobileModal].forEach(m => m.style.display = "none");
+  modal.style.display = "grid";
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) refreshEverything().catch(()=>{});
+});
+
+bindEvents();
+setWorkspaceInitialTab();
+bodyWorkspaceOpen(false);
+setMobileView("chat");
+
+(async function init() {
+  try {
+    const saved = localStorage.getItem("solvera_password");
+    if (saved) {
+      try {
+        await loginWithPassword(saved);
+        closeOverlay();
+      } catch {
+        openOverlayModal(els.loginModal);
+      }
+    } else {
+      openOverlayModal(els.loginModal);
+    }
+
+    await refreshEverything();
+    if (!state.currentChatId) {
+      const chat = await fetchJSON(`${API}/api/chats`, {
+        method: "POST",
+        body: JSON.stringify({ title: "Nieuwe chat" })
+      });
+      state.currentChatId = chat.chat.id;
+      localStorage.setItem("solvera_chat_id", state.currentChatId);
+    }
+    await openChat(state.currentChatId);
+    if (state.memory) updateMemorySidebar();
+    setStatus("Solvera is ready");
+    setAllProgress(72);
+    scrollFeedToBottom(true);
+  } catch (err) {
+    openOverlayModal(els.loginModal);
+    els.loginError.textContent = "Login nodig om Solvera te openen.";
+  }
+})();
+</script>
+</body>
+</html>
