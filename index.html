@@ -1,0 +1,2626 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Solvera</title>
+
+<style>
+:root{
+  --bg:#04060a;
+  --panel:rgba(255,255,255,0.04);
+  --panel-strong:rgba(255,255,255,0.06);
+  --line:rgba(255,255,255,0.08);
+  --line-strong:rgba(255,255,255,0.12);
+  --text:rgba(255,255,255,0.96);
+  --muted:rgba(255,255,255,0.54);
+  --muted2:rgba(255,255,255,0.34);
+  --blue:#2ca3ff;
+  --purple:#6a5cff;
+  --green:#29d17d;
+  --danger:#ff5c7a;
+  --shadow:0 18px 70px rgba(0,0,0,0.36);
+  --radius:18px;
+  --radius-lg:22px;
+  --blur:22px;
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(45,163,255,0.11), transparent 22%),
+    radial-gradient(circle at 80% 0%, rgba(106,92,255,0.09), transparent 18%),
+    radial-gradient(circle at 50% 80%, rgba(106,92,255,0.06), transparent 22%),
+    var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",system-ui,sans-serif;
+  overflow:hidden;
+}
+
+button,input,textarea{
+  font:inherit;
+}
+
+.hidden{display:none !important}
+
+.app{
+  width:100%;
+  height:100%;
+  display:flex;
+  position:relative;
+}
+
+/* ===== LEFT SIDEBAR ===== */
+.sidebar{
+  width:280px;
+  min-width:280px;
+  display:none;
+  flex-direction:column;
+  border-right:1px solid var(--line);
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  backdrop-filter:blur(var(--blur));
+  -webkit-backdrop-filter:blur(var(--blur));
+  padding:14px;
+  gap:14px;
+}
+
+@media (min-width: 1180px){
+  .sidebar{display:flex}
+}
+
+.brandRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:4px 2px 10px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
+
+.brandMark{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  position:relative;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15), transparent 35%),
+    conic-gradient(from 210deg, rgba(44,163,255,1), rgba(106,92,255,1), rgba(44,163,255,1));
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.08),
+    0 0 18px rgba(44,163,255,0.22),
+    0 0 30px rgba(106,92,255,0.14);
+}
+.brandMark::after{
+  content:"";
+  position:absolute;
+  inset:6px;
+  border-radius:50%;
+  background:rgba(4,6,10,0.9);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.06);
+}
+
+.brandText{
+  letter-spacing:.28em;
+  text-indent:.28em;
+  font-size:14px;
+  font-weight:600;
+  color:rgba(255,255,255,0.92);
+  white-space:nowrap;
+}
+
+.iconButton{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,0.03);
+  color:rgba(255,255,255,0.82);
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  transition:transform .12s ease, background .12s ease, border-color .12s ease;
+}
+.iconButton:hover{
+  transform:translateY(-1px);
+  background:rgba(255,255,255,0.05);
+  border-color:rgba(255,255,255,0.12);
+}
+
+.newChatBtn{
+  width:100%;
+  border-radius:14px;
+  border:1px solid rgba(84,104,255,0.36);
+  background:linear-gradient(180deg, rgba(80,98,255,0.12), rgba(80,98,255,0.06));
+  color:rgba(255,255,255,0.92);
+  padding:14px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  cursor:pointer;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.02);
+}
+
+.sidebarSectionTitle{
+  color:rgba(255,255,255,0.55);
+  font-size:13px;
+  margin:4px 2px 0;
+}
+
+.sidebarList{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.chatItem{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 12px;
+  border-radius:12px;
+  border:1px solid transparent;
+  background:rgba(255,255,255,0.02);
+  color:rgba(255,255,255,0.88);
+  cursor:pointer;
+  transition:background .12s ease, border-color .12s ease, transform .12s ease;
+}
+.chatItem:hover{
+  background:rgba(255,255,255,0.04);
+  transform:translateY(-1px);
+}
+.chatItem.active{
+  background:linear-gradient(180deg, rgba(44,163,255,0.14), rgba(106,92,255,0.10));
+  border-color:rgba(80,98,255,0.25);
+  box-shadow:0 0 0 1px rgba(255,255,255,0.03) inset;
+}
+.chatItemName{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:14px;
+}
+.chatItemMeta{
+  color:var(--muted2);
+  font-size:12px;
+  flex:0 0 auto;
+}
+
+.memoryBlock{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding-top:4px;
+}
+.memoryGroup{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  padding:12px 12px;
+  border-radius:14px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,0.02);
+}
+.memoryGroupTitle{
+  font-size:13px;
+  color:rgba(255,255,255,0.62);
+}
+.memoryItem{
+  color:rgba(255,255,255,0.82);
+  font-size:14px;
+  display:flex;
+  gap:8px;
+  align-items:flex-start;
+}
+.memoryItem::before{
+  content:"";
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  margin-top:7px;
+  background:rgba(44,163,255,0.65);
+  box-shadow:0 0 10px rgba(44,163,255,0.35);
+}
+
+.profileCard{
+  margin-top:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:14px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,0.03);
+}
+.profileLeft{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
+.profileAvatar{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  position:relative;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.18), transparent 36%),
+    conic-gradient(from 210deg, rgba(44,163,255,1), rgba(106,92,255,1), rgba(44,163,255,1));
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.08),
+    0 0 18px rgba(106,92,255,0.2);
+}
+.profileAvatar::after{
+  content:"";
+  position:absolute;
+  inset:7px;
+  border-radius:50%;
+  background:rgba(4,6,10,0.9);
+}
+.profileMeta{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.profileName{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  font-size:14px;
+}
+.onlineDot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 12px rgba(41,209,125,0.8);
+}
+.profileSub{
+  color:var(--muted);
+  font-size:13px;
+}
+.proPill{
+  padding:4px 8px;
+  border-radius:10px;
+  border:1px solid rgba(84,104,255,0.26);
+  background:rgba(84,104,255,0.08);
+  color:rgba(255,255,255,0.8);
+  font-size:12px;
+}
+
+/* ===== CENTER ===== */
+.center{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  position:relative;
+}
+
+.centerHeader{
+  padding:18px 18px 12px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+}
+.centerHeaderCopy{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  min-width:0;
+}
+.greeting{
+  font-size:24px;
+  line-height:1.15;
+  letter-spacing:-0.02em;
+  font-weight:700;
+  color:#5d67ff;
+}
+.subtitle{
+  color:rgba(255,255,255,0.62);
+  font-size:16px;
+}
+
+.voiceButton{
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.10);
+  background:rgba(255,255,255,0.03);
+  color:rgba(255,255,255,0.9);
+  padding:12px 16px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.02);
+}
+.voiceButton:hover{
+  background:rgba(255,255,255,0.05);
+}
+
+.feed{
+  flex:1;
+  overflow:auto;
+  padding:6px 18px 18px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  -webkit-overflow-scrolling:touch;
+}
+
+.msgRow{
+  display:flex;
+  align-items:flex-end;
+  gap:10px;
+  animation:fadeUp .22s ease;
+}
+@keyframes fadeUp{
+  from{opacity:0; transform:translateY(8px)}
+  to{opacity:1; transform:translateY(0)}
+}
+.msgRow.user{justify-content:flex-end}
+.msgRow.bot{justify-content:flex-start}
+
+.avatarOrb{
+  flex:0 0 auto;
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  position:relative;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.08),
+    0 0 18px rgba(44,163,255,0.18);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.18), transparent 36%),
+    conic-gradient(from 210deg, rgba(44,163,255,1), rgba(106,92,255,1), rgba(44,163,255,1));
+}
+.avatarOrb::after{
+  content:"";
+  position:absolute;
+  inset:6px;
+  border-radius:50%;
+  background:rgba(4,6,10,0.92);
+}
+
+.msgStack{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  min-width:0;
+}
+.senderLine{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:rgba(255,255,255,0.74);
+  font-size:14px;
+}
+.senderName{
+  font-weight:500;
+}
+.senderState{
+  color:#aa8cff;
+  font-weight:500;
+}
+.senderDots{
+  display:inline-flex;
+  gap:3px;
+  transform:translateY(1px);
+}
+.senderDots span{
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:#aa8cff;
+  opacity:.7;
+  animation:breathe 1.2s infinite ease-in-out;
+}
+.senderDots span:nth-child(2){animation-delay:.18s}
+.senderDots span:nth-child(3){animation-delay:.36s}
+@keyframes breathe{
+  0%,100%{transform:translateY(0);opacity:.35}
+  50%{transform:translateY(-2px);opacity:1}
+}
+
+.bubble{
+  max-width:min(680px, 78vw);
+  border-radius:18px;
+  padding:16px 18px;
+  line-height:1.48;
+  font-size:15px;
+  white-space:pre-wrap;
+  word-break:break-word;
+  position:relative;
+  box-shadow:var(--shadow);
+}
+.user .bubble{
+  background:linear-gradient(135deg, rgba(94,98,255,0.95), rgba(106,92,255,0.86));
+  color:#fff;
+  border:1px solid rgba(255,255,255,0.06);
+  border-top-right-radius:8px;
+}
+.bot .bubble{
+  background:linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.03));
+  color:rgba(255,255,255,0.94);
+  border:1px solid rgba(255,255,255,0.08);
+  border-top-left-radius:8px;
+}
+
+.timestamp{
+  color:rgba(255,255,255,0.44);
+  font-size:12px;
+  align-self:flex-end;
+  padding-right:4px;
+}
+
+.thinkingCard{
+  width:min(420px, 100%);
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.025);
+  padding:14px;
+  box-shadow:var(--shadow);
+}
+.thinkingTitle{
+  color:#ac8eff;
+  font-size:14px;
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.timeline{
+  position:relative;
+  padding-left:22px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.timeline::before{
+  content:"";
+  position:absolute;
+  left:7px;
+  top:3px;
+  bottom:3px;
+  width:1px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06));
+}
+.timelineStep{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  color:rgba(255,255,255,0.58);
+  font-size:14px;
+}
+.timelineStep::before{
+  content:"";
+  position:absolute;
+  left:-19px;
+  top:7px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.22);
+  box-shadow:0 0 0 3px rgba(255,255,255,0.03);
+}
+.timelineStep.active{
+  color:rgba(255,255,255,0.96);
+}
+.timelineStep.active::before{
+  background:linear-gradient(180deg, var(--blue), var(--purple));
+  box-shadow:0 0 0 4px rgba(44,163,255,0.10);
+}
+.timelineStep.done{
+  color:rgba(255,255,255,0.82);
+}
+.timelineStep.done::before{
+  background:var(--green);
+  box-shadow:0 0 0 4px rgba(41,209,125,0.10);
+}
+.timelineCheck{
+  color:#9be8c6;
+  font-size:14px;
+  flex:0 0 auto;
+}
+.timelineSpinner{
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  border:2px solid rgba(170,140,255,0.24);
+  border-top-color:rgba(170,140,255,1);
+  animation:spin 1s linear infinite;
+  flex:0 0 auto;
+}
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
+
+.responseCard{
+  width:min(520px, 100%);
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.03);
+  padding:16px 16px 14px;
+  box-shadow:var(--shadow);
+}
+.responseText{
+  color:rgba(255,255,255,0.9);
+  font-size:15px;
+  line-height:1.55;
+}
+.responseTime{
+  color:rgba(255,255,255,0.42);
+  font-size:12px;
+  text-align:right;
+  margin-top:8px;
+}
+
+.fileCard{
+  width:min(520px, 100%);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:14px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.03);
+  box-shadow:var(--shadow);
+}
+.fileLeft{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
+.fileIcon{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.02);
+  display:grid;
+  place-items:center;
+  color:rgba(255,255,255,0.78);
+  flex:0 0 auto;
+}
+.fileMeta{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.fileName{
+  font-size:15px;
+  font-weight:600;
+  color:rgba(255,255,255,0.92);
+}
+.fileInfo{
+  color:rgba(255,255,255,0.46);
+  font-size:12px;
+}
+.fileActions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:rgba(255,255,255,0.76);
+}
+.fileAction{
+  width:30px;
+  height:30px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.02);
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+}
+.fileAction:hover{
+  background:rgba(255,255,255,0.05);
+}
+
+.quickChips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.quickChip{
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.03);
+  padding:10px 14px;
+  color:rgba(255,255,255,0.82);
+  font-size:13px;
+  cursor:pointer;
+  transition:transform .12s ease, background .12s ease, border-color .12s ease;
+}
+.quickChip:hover{
+  transform:translateY(-1px);
+  background:rgba(255,255,255,0.05);
+  border-color:rgba(255,255,255,0.12);
+}
+
+.composerWrap{
+  padding:0 18px 18px;
+}
+.composerShell{
+  border-radius:22px;
+  border:1px solid rgba(84,104,255,0.28);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.025));
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.02) inset,
+    0 0 30px rgba(84,104,255,0.10),
+    0 0 60px rgba(44,163,255,0.03);
+  padding:12px;
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+}
+.modebar{
+  display:flex;
+  gap:10px;
+  margin-bottom:12px;
+}
+.modeBtn{
+  flex:1;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.03);
+  color:rgba(255,255,255,0.78);
+  padding:12px 14px;
+  font-size:14px;
+  cursor:pointer;
+}
+.modeBtn.active{
+  background:linear-gradient(135deg, rgba(44,163,255,0.95), rgba(106,92,255,0.90));
+  color:#fff;
+  border-color:transparent;
+}
+
+.composerRow{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.plusBtn,
+.micBtn,
+.sendBtn{
+  width:48px;
+  height:48px;
+  border:none;
+  border-radius:16px;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  flex:0 0 auto;
+}
+.plusBtn,
+.micBtn{
+  background:rgba(255,255,255,0.04);
+  color:rgba(255,255,255,0.84);
+  border:1px solid rgba(255,255,255,0.05);
+}
+.sendBtn{
+  background:linear-gradient(135deg, rgba(44,163,255,1), rgba(106,92,255,0.92));
+  color:#fff;
+  box-shadow:0 0 24px rgba(44,163,255,0.22);
+}
+.inputWrap{
+  flex:1;
+  min-height:48px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.07);
+  background:rgba(0,0,0,0.16);
+  display:flex;
+  align-items:center;
+  padding:0 14px;
+}
+.inputWrap:focus-within{
+  border-color:rgba(44,163,255,0.58);
+  box-shadow:0 0 0 1px rgba(44,163,255,0.12) inset, 0 0 18px rgba(44,163,255,0.12);
+}
+.composerInput{
+  width:100%;
+  min-height:48px;
+  max-height:124px;
+  resize:none;
+  border:none;
+  outline:none;
+  background:transparent;
+  color:#fff;
+  font-size:16px;
+  line-height:1.45;
+  padding:12px 0;
+}
+.composerInput::placeholder{
+  color:rgba(255,255,255,0.34);
+}
+
+.statusRow{
+  margin-top:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  color:rgba(255,255,255,0.44);
+  font-size:12px;
+  padding:0 4px;
+}
+
+.liveLine{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.liveDot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 12px rgba(41,209,125,0.82);
+}
+
+/* ===== RIGHT WORKSPACE ===== */
+.workspace{
+  width:410px;
+  min-width:410px;
+  display:none;
+  flex-direction:column;
+  border-left:1px solid var(--line);
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  backdrop-filter:blur(var(--blur));
+  -webkit-backdrop-filter:blur(var(--blur));
+}
+
+@media (min-width: 1080px){
+  .workspace{display:flex}
+}
+
+.workspaceHeader{
+  padding:14px 16px 10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:14px;
+}
+
+.workspaceTitleBlock{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  min-width:0;
+}
+.workspaceTopRow{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:16px;
+  font-weight:600;
+}
+.livePill{
+  padding:4px 8px;
+  border-radius:999px;
+  background:rgba(41,209,125,0.10);
+  border:1px solid rgba(41,209,125,0.18);
+  color:#8beab7;
+  font-size:12px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+.livePill::before{
+  content:"";
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 10px rgba(41,209,125,0.7);
+}
+.workspaceActions{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.workspaceAction{
+  width:30px;
+  height:30px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.03);
+  color:rgba(255,255,255,0.76);
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+}
+
+.agentStatusCard{
+  margin:0 14px 12px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.03);
+  padding:14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.agentStatusLeft{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
+.agentRing{
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  position:relative;
+  background:
+    conic-gradient(from 0deg, rgba(44,163,255,1), rgba(106,92,255,1), rgba(44,163,255,1));
+  box-shadow:0 0 18px rgba(44,163,255,0.15);
+}
+.agentRing::before{
+  content:"";
+  position:absolute;
+  inset:5px;
+  border-radius:50%;
+  background:rgba(4,6,10,0.92);
+}
+.agentRing::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  background:conic-gradient(from -60deg, rgba(44,163,255,0.92) 0 72%, rgba(255,255,255,0.08) 72% 100%);
+  mask:radial-gradient(circle at 50% 50%, transparent 61%, #000 62%);
+}
+.agentStatusCopy{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+.agentStatusTitle{
+  font-size:15px;
+  color:rgba(255,255,255,0.92);
+}
+.agentStatusSub{
+  color:rgba(255,255,255,0.54);
+  font-size:13px;
+}
+.agentGauge{
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:conic-gradient(from 0deg, rgba(106,92,255,1) 0 72%, rgba(255,255,255,0.10) 72% 100%);
+  position:relative;
+}
+.agentGauge::before{
+  content:"";
+  position:absolute;
+  inset:6px;
+  border-radius:50%;
+  background:rgba(4,6,10,0.92);
+}
+.agentGauge span{
+  position:relative;
+  z-index:1;
+  font-size:14px;
+}
+
+.tabs{
+  display:flex;
+  gap:0;
+  margin:0 14px 12px;
+  border-radius:14px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.03);
+}
+.tab{
+  flex:1;
+  padding:12px 12px;
+  text-align:center;
+  font-size:14px;
+  color:rgba(255,255,255,0.70);
+  cursor:pointer;
+  border-right:1px solid rgba(255,255,255,0.06);
+}
+.tab:last-child{border-right:none}
+.tab.active{
+  color:#fff;
+  background:rgba(255,255,255,0.04);
+  box-shadow:inset 0 0 0 1px rgba(84,104,255,0.14);
+}
+
+.panelScroll{
+  flex:1;
+  overflow:auto;
+  padding:0 14px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  -webkit-overflow-scrolling:touch;
+}
+
+.panelCard{
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.03);
+  padding:14px;
+  box-shadow:var(--shadow);
+}
+
+.panelTitle{
+  font-size:14px;
+  color:rgba(255,255,255,0.88);
+  margin-bottom:12px;
+}
+
+.terminal{
+  min-height:240px;
+  max-height:320px;
+  overflow:auto;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  font-size:12px;
+  color:#8fe7b8;
+  line-height:1.6;
+  white-space:pre-wrap;
+}
+.terminal::selection{
+  background:rgba(41,209,125,0.22);
+}
+
+.fileRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 12px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.02);
+  margin-bottom:8px;
+  cursor:pointer;
+}
+.fileRow:hover{
+  background:rgba(255,255,255,0.04);
+}
+.fileRowLeft{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
+.fileExt{
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  display:grid;
+  place-items:center;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+  color:rgba(255,255,255,0.8);
+  flex:0 0 auto;
+}
+.fileRowTitle{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.fileRowName{
+  font-size:14px;
+  color:rgba(255,255,255,0.90);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.fileRowSize{
+  font-size:12px;
+  color:rgba(255,255,255,0.44);
+}
+.fileRowRight{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:rgba(255,255,255,0.72);
+  flex:0 0 auto;
+}
+.previewFrame{
+  width:100%;
+  height:320px;
+  border:none;
+  border-radius:14px;
+  background:#fff;
+  overflow:hidden;
+}
+
+.logsList{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  font-size:12px;
+  color:#8fe7b8;
+  line-height:1.5;
+}
+.logLine{
+  opacity:.92;
+}
+.logLine.dim{
+  color:rgba(143,231,184,0.66);
+}
+
+/* ===== MOBILE ===== */
+.mobileTopbar{
+  display:none;
+  padding:16px 16px 10px;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+@media (max-width: 1179px){
+  .mobileTopbar{display:flex}
+  .sidebar,.workspace{display:none}
+  .center{width:100%}
+  .centerHeader{
+    padding:10px 16px 8px;
+  }
+  .feed{
+    padding:6px 16px 12px;
+  }
+  .composerWrap{
+    padding:0 16px 16px;
+  }
+}
+
+.mobileBrand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.mobileIcons{
+  display:flex;
+  gap:10px;
+}
+.mobileStatusCard{
+  display:none;
+}
+@media (max-width: 1179px){
+  .mobileStatusCard{
+    display:flex;
+    margin:6px 16px 12px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,0.08);
+    background:rgba(255,255,255,0.03);
+    padding:14px;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+}
+.mobileTabs{
+  display:none;
+  margin:0 16px 12px;
+  border-radius:14px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.03);
+}
+@media (max-width: 1179px){
+  .mobileTabs{display:flex}
+}
+.mobileTab{
+  flex:1;
+  padding:12px 12px;
+  text-align:center;
+  font-size:14px;
+  color:rgba(255,255,255,0.72);
+  cursor:pointer;
+  border-right:1px solid rgba(255,255,255,0.06);
+}
+.mobileTab:last-child{border-right:none}
+.mobileTab.active{
+  color:#fff;
+  background:rgba(255,255,255,0.04);
+}
+
+.mobileWorkspace{
+  display:none;
+  margin:0 16px 12px;
+}
+.mobileWorkspace.active{
+  display:block;
+}
+.mobileBottomNav{
+  display:none;
+}
+@media (max-width: 1179px){
+  .mobileBottomNav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:6px;
+    position:fixed;
+    left:14px;
+    right:14px;
+    bottom:12px;
+    padding:12px 12px;
+    border-radius:20px;
+    border:1px solid rgba(255,255,255,0.08);
+    background:rgba(10,12,16,0.78);
+    backdrop-filter:blur(24px);
+    -webkit-backdrop-filter:blur(24px);
+    box-shadow:var(--shadow);
+    z-index:40;
+  }
+  .bottomItem{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    color:rgba(255,255,255,0.58);
+    font-size:12px;
+    cursor:pointer;
+  }
+  .bottomItem.active{
+    color:#fff;
+  }
+  .bottomCore{
+    width:58px;
+    height:58px;
+    border-radius:50%;
+    background:radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15), transparent 35%), conic-gradient(from 210deg, var(--blue), var(--purple), var(--blue));
+    box-shadow:0 0 0 1px rgba(255,255,255,0.06), 0 0 24px rgba(44,163,255,0.20);
+    transform:translateY(-18px);
+    position:relative;
+    flex:0 0 auto;
+  }
+  .bottomCore::after{
+    content:"";
+    position:absolute;
+    inset:8px;
+    border-radius:50%;
+    background:rgba(4,6,10,0.92);
+  }
+}
+
+.mobileSheet{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:60;
+  background:rgba(0,0,0,0.42);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+.mobileSheet.open{display:block}
+.sheetCard{
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:12px;
+  top:64px;
+  border-radius:24px;
+  background:rgba(10,12,16,0.95);
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.sheetHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 16px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.sheetBody{
+  flex:1;
+  overflow:auto;
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  -webkit-overflow-scrolling:touch;
+}
+.sheetClose{
+  width:34px;
+  height:34px;
+  border:none;
+  border-radius:12px;
+  background:rgba(255,255,255,0.04);
+  color:#fff;
+}
+
+.overlayLogin{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.72);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:80;
+  padding:18px;
+}
+.loginCard{
+  width:min(420px, 100%);
+  border-radius:24px;
+  border:1px solid rgba(255,255,255,0.10);
+  background:rgba(10,12,16,0.92);
+  box-shadow:var(--shadow);
+  padding:20px;
+}
+.loginTitle{
+  font-size:20px;
+  font-weight:700;
+  margin:0 0 8px;
+}
+.loginSub{
+  color:rgba(255,255,255,0.58);
+  margin:0 0 16px;
+  line-height:1.5;
+}
+.loginRow{
+  display:flex;
+  gap:10px;
+}
+.loginInput{
+  flex:1;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.03);
+  color:#fff;
+  padding:14px 14px;
+  outline:none;
+}
+.loginInput:focus{
+  border-color:rgba(44,163,255,0.56);
+  box-shadow:0 0 0 1px rgba(44,163,255,0.12) inset;
+}
+.loginButton{
+  border:none;
+  border-radius:14px;
+  padding:14px 16px;
+  background:linear-gradient(135deg, var(--blue), var(--purple));
+  color:#fff;
+}
+.loginError{
+  margin-top:12px;
+  color:#ff7f9a;
+  font-size:13px;
+  min-height:18px;
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:70;
+  display:none;
+  background:rgba(0,0,0,0.52);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  padding:16px;
+}
+.modal.open{display:grid; place-items:center;}
+.modalCard{
+  width:min(760px, 100%);
+  max-height:min(88vh, 720px);
+  overflow:auto;
+  border-radius:24px;
+  border:1px solid rgba(255,255,255,0.10);
+  background:rgba(10,12,16,0.96);
+  box-shadow:var(--shadow);
+}
+.modalHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:16px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.modalBody{
+  padding:16px;
+}
+.modalTitle{
+  font-size:16px;
+  font-weight:700;
+}
+.modalClose{
+  width:34px;
+  height:34px;
+  border:none;
+  border-radius:12px;
+  background:rgba(255,255,255,0.04);
+  color:#fff;
+}
+.codeView{
+  white-space:pre-wrap;
+  word-break:break-word;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  font-size:12px;
+  line-height:1.6;
+  color:#d7def3;
+}
+</style>
+</head>
+<body>
+
+<div id="loginOverlay" class="overlayLogin">
+  <div class="loginCard">
+    <div class="brandRow" style="padding:0 0 12px;">
+      <div class="brand">
+        <div class="brandMark"></div>
+        <div class="brandText">SOLVERA</div>
+      </div>
+    </div>
+    <h1 class="loginTitle">Toegang verifiëren</h1>
+    <p class="loginSub">Voer je server-wachtwoord in. Het wordt alleen gebruikt om een cookie-sessie te maken en niet opgeslagen in de browser.</p>
+    <form id="loginForm" class="loginRow">
+      <input id="passwordInput" class="loginInput" type="password" autocomplete="current-password" placeholder="Wachtwoord" />
+      <button class="loginButton" type="submit">Inloggen</button>
+    </form>
+    <div id="loginError" class="loginError"></div>
+  </div>
+</div>
+
+<div id="fileModal" class="modal">
+  <div class="modalCard">
+    <div class="modalHead">
+      <div>
+        <div id="fileModalName" class="modalTitle">Bestand</div>
+        <div id="fileModalMeta" style="color:rgba(255,255,255,0.48);font-size:12px;margin-top:4px;"></div>
+      </div>
+      <button class="modalClose" id="fileModalClose">✕</button>
+    </div>
+    <div class="modalBody">
+      <div id="fileModalContent" class="codeView"></div>
+    </div>
+  </div>
+</div>
+
+<div id="mobileSheet" class="mobileSheet">
+  <div class="sheetCard">
+    <div class="sheetHeader">
+      <div id="sheetTitle" style="font-size:15px;font-weight:700;">Paneel</div>
+      <button class="sheetClose" id="sheetClose">✕</button>
+    </div>
+    <div id="sheetBody" class="sheetBody"></div>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brandRow">
+      <div class="brand">
+        <div class="brandMark"></div>
+        <div class="brandText">SOLVERA</div>
+      </div>
+      <button class="iconButton" id="desktopOpenBtn" title="Open">↗</button>
+    </div>
+
+    <button class="newChatBtn" id="newChatBtn">
+      <span style="font-size:18px;">＋</span>
+      <span>New Chat</span>
+    </button>
+
+    <div class="sidebarSectionTitle">Chats</div>
+    <div id="chatList" class="sidebarList"></div>
+
+    <div class="sidebarSectionTitle">Memory</div>
+    <div class="memoryBlock">
+      <div class="memoryGroup">
+        <div class="memoryGroupTitle">Persoonlijk</div>
+        <div id="memoryPersonal"></div>
+      </div>
+      <div class="memoryGroup">
+        <div class="memoryGroupTitle">Projecten</div>
+        <div id="memoryProjects"></div>
+      </div>
+      <div class="memoryGroup">
+        <div class="memoryGroupTitle">Notities</div>
+        <div id="memoryNotes"></div>
+      </div>
+    </div>
+
+    <div class="profileCard">
+      <div class="profileLeft">
+        <div class="profileAvatar"></div>
+        <div class="profileMeta">
+          <div class="profileName">
+            <span>Daniël</span>
+            <span class="proPill">Pro</span>
+          </div>
+          <div class="profileSub"><span class="onlineDot"></span> Online</div>
+        </div>
+      </div>
+      <button class="iconButton" id="settingsBtn" title="Settings">⚙</button>
+    </div>
+  </aside>
+
+  <main class="center">
+    <div class="mobileTopbar">
+      <div class="mobileBrand">
+        <div class="brandMark"></div>
+        <div class="brandText">SOLVERA</div>
+      </div>
+      <div class="mobileIcons">
+        <button class="iconButton" id="mobileSearchBtn" title="Zoeken">⌕</button>
+        <button class="iconButton" id="mobileMenuBtn" title="Menu">☰</button>
+      </div>
+    </div>
+
+    <div class="centerHeader">
+      <div class="centerHeaderCopy">
+        <div class="greeting">Goedemorgen, Daniël 👋</div>
+        <div class="subtitle">Waarmee kan ik je vandaag helpen?</div>
+      </div>
+      <button class="voiceButton" id="voiceModeBtn">
+        <span style="font-size:16px;">🎙</span>
+        <span>Voice Mode</span>
+      </button>
+    </div>
+
+    <div class="mobileStatusCard">
+      <div class="agentStatusLeft">
+        <div class="agentRing"></div>
+        <div class="agentStatusCopy">
+          <div class="agentStatusTitle">Agent Status <span style="color:var(--green)">● Actief</span></div>
+          <div class="agentStatusSub">Bezig met bouwen...</div>
+        </div>
+      </div>
+      <div class="agentGauge"><span>72%</span></div>
+    </div>
+
+    <div class="mobileTabs">
+      <div class="mobileTab active" data-mobile-tab="chat" id="mobileChatTab">Chat</div>
+      <div class="mobileTab" data-mobile-tab="workspace" id="mobileWorkspaceTab">Workspace</div>
+    </div>
+
+    <div class="feed" id="feed"></div>
+
+    <div class="mobileWorkspace" id="mobileWorkspace"></div>
+
+    <div class="composerWrap">
+      <div class="quickChips" id="quickChips">
+        <button class="quickChip" data-chip="Maak het donker thema">Maak het donker thema</button>
+        <button class="quickChip" data-chip="Voeg meer animaties toe">Voeg meer animaties toe</button>
+        <button class="quickChip" data-chip="Aanpassen">Aanpassen</button>
+      </div>
+
+      <div style="height:10px"></div>
+
+      <div class="composerShell">
+        <div class="modebar">
+          <button class="modeBtn active" data-mode="chat">Chat</button>
+          <button class="modeBtn" data-mode="agent">Agent</button>
+          <button class="modeBtn" data-mode="auto">Auto</button>
+        </div>
+        <div class="composerRow">
+          <button class="plusBtn" id="plusBtn" title="Acties">＋</button>
+          <div class="inputWrap">
+            <textarea id="composerInput" class="composerInput" rows="1" placeholder="Stel een vraag of geef een opdracht..."></textarea>
+          </div>
+          <button class="micBtn" id="micBtn" title="Voice">🎤</button>
+          <button class="sendBtn" id="sendBtn" title="Versturen">➤</button>
+        </div>
+        <div class="statusRow">
+          <div class="liveLine"><span class="liveDot"></span><span id="statusText">Solvera is ready</span></div>
+          <div id="hintText">Enter = send</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <aside class="workspace">
+    <div class="workspaceHeader">
+      <div class="workspaceTitleBlock">
+        <div class="workspaceTopRow">Agent Workspace <span class="livePill">Live</span></div>
+      </div>
+      <div class="workspaceActions">
+        <button class="workspaceAction" id="downloadBtn" title="Download">⤓</button>
+        <button class="workspaceAction" id="workspaceOpenBtn" title="Open preview">↗</button>
+        <button class="workspaceAction" id="workspaceCloseBtn" title="Sluiten">✕</button>
+      </div>
+    </div>
+
+    <div class="agentStatusCard">
+      <div class="agentStatusLeft">
+        <div class="agentRing"></div>
+        <div class="agentStatusCopy">
+          <div class="agentStatusTitle">Actief</div>
+          <div class="agentStatusSub">Bezig met bouwen...</div>
+        </div>
+      </div>
+      <div class="agentGauge"><span id="desktopProgress">72%</span></div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="terminal">Terminal</div>
+      <div class="tab" data-tab="files">Bestanden</div>
+      <div class="tab" data-tab="preview">Preview</div>
+      <div class="tab" data-tab="logs">Logs</div>
+    </div>
+
+    <div class="panelScroll">
+      <div class="panelCard" id="terminalPanel">
+        <div class="panelTitle">Terminal</div>
+        <div class="terminal" id="terminal">> ready</div>
+      </div>
+
+      <div class="panelCard hidden" id="filesPanel">
+        <div class="panelTitle">Bestanden</div>
+        <div id="filesList"></div>
+      </div>
+
+      <div class="panelCard hidden" id="previewPanel">
+        <div class="panelTitle">Live Preview</div>
+        <iframe id="previewFrame" class="previewFrame"></iframe>
+      </div>
+
+      <div class="panelCard hidden" id="logsPanel">
+        <div class="panelTitle">Logs</div>
+        <div class="logsList" id="logsList"></div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<div class="mobileBottomNav">
+  <div class="bottomItem active" data-bottom="chat" id="bottomChat">
+    <div>💬</div><div>Chat</div>
+  </div>
+  <div class="bottomItem" data-bottom="workspace" id="bottomWorkspace">
+    <div>◫</div><div>Workspace</div>
+  </div>
+  <div class="bottomCore" id="bottomCore"></div>
+  <div class="bottomItem" data-bottom="memory" id="bottomMemory">
+    <div>🧠</div><div>Memory</div>
+  </div>
+  <div class="bottomItem" data-bottom="profile" id="bottomProfile">
+    <div>👤</div><div>Profile</div>
+  </div>
+</div>
+
+<script>
+const API_BASE = location.origin;
+
+const els = {
+  loginOverlay: document.getElementById("loginOverlay"),
+  loginForm: document.getElementById("loginForm"),
+  passwordInput: document.getElementById("passwordInput"),
+  loginError: document.getElementById("loginError"),
+  chatList: document.getElementById("chatList"),
+  memoryPersonal: document.getElementById("memoryPersonal"),
+  memoryProjects: document.getElementById("memoryProjects"),
+  memoryNotes: document.getElementById("memoryNotes"),
+  feed: document.getElementById("feed"),
+  composerInput: document.getElementById("composerInput"),
+  sendBtn: document.getElementById("sendBtn"),
+  plusBtn: document.getElementById("plusBtn"),
+  micBtn: document.getElementById("micBtn"),
+  voiceModeBtn: document.getElementById("voiceModeBtn"),
+  newChatBtn: document.getElementById("newChatBtn"),
+  settingsBtn: document.getElementById("settingsBtn"),
+  terminal: document.getElementById("terminal"),
+  logsList: document.getElementById("logsList"),
+  previewFrame: document.getElementById("previewFrame"),
+  filesList: document.getElementById("filesList"),
+  desktopProgress: document.getElementById("desktopProgress"),
+  statusText: document.getElementById("statusText"),
+  hintText: document.getElementById("hintText"),
+  mobileSheet: document.getElementById("mobileSheet"),
+  sheetTitle: document.getElementById("sheetTitle"),
+  sheetBody: document.getElementById("sheetBody"),
+  sheetClose: document.getElementById("sheetClose"),
+  mobileSearchBtn: document.getElementById("mobileSearchBtn"),
+  mobileMenuBtn: document.getElementById("mobileMenuBtn"),
+  mobileWorkspace: document.getElementById("mobileWorkspace"),
+  mobileChatTab: document.getElementById("mobileChatTab"),
+  mobileWorkspaceTab: document.getElementById("mobileWorkspaceTab"),
+  bottomChat: document.getElementById("bottomChat"),
+  bottomWorkspace: document.getElementById("bottomWorkspace"),
+  bottomMemory: document.getElementById("bottomMemory"),
+  bottomProfile: document.getElementById("bottomProfile"),
+  bottomCore: document.getElementById("bottomCore"),
+  fileModal: document.getElementById("fileModal"),
+  fileModalName: document.getElementById("fileModalName"),
+  fileModalMeta: document.getElementById("fileModalMeta"),
+  fileModalContent: document.getElementById("fileModalContent"),
+  fileModalClose: document.getElementById("fileModalClose"),
+  downloadBtn: document.getElementById("downloadBtn"),
+  workspaceOpenBtn: document.getElementById("workspaceOpenBtn"),
+  workspaceCloseBtn: document.getElementById("workspaceCloseBtn"),
+  desktopOpenBtn: document.getElementById("desktopOpenBtn"),
+  tabs: Array.from(document.querySelectorAll(".tab")),
+  modeBtns: Array.from(document.querySelectorAll(".modeBtn")),
+  quickChips: Array.from(document.querySelectorAll(".quickChip")),
+  mobileTabs: Array.from(document.querySelectorAll(".mobileTab")),
+  bottomItems: Array.from(document.querySelectorAll(".bottomItem")),
+  terminalPanel: document.getElementById("terminalPanel"),
+  filesPanel: document.getElementById("filesPanel"),
+  previewPanel: document.getElementById("previewPanel"),
+  logsPanel: document.getElementById("logsPanel"),
+};
+
+const state = {
+  authReady: false,
+  chats: [],
+  memory: { projects: [], goals: [], notes: [] },
+  activeChatId: null,
+  activeMode: "chat",
+  mobileView: "chat",
+  logs: [],
+  agentProgress: 72,
+  sse: null,
+  currentStreamAbort: null,
+  previewCacheBuster: Date.now(),
+  profileName: "Daniël",
+  runningAgent: false,
+};
+
+function pad2(n){ return String(n).padStart(2,"0"); }
+function timeLabel(){
+  const d = new Date();
+  return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+}
+function escapeHtml(s){
+  return String(s ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#39;");
+}
+function setStatus(text){
+  els.statusText.textContent = text;
+}
+function setDesktopProgress(value){
+  state.agentProgress = value;
+  els.desktopProgress.textContent = `${value}%`;
+}
+function setVh(){
+  document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
+}
+setVh();
+window.addEventListener("resize", setVh);
+
+function isMobile(){
+  return window.matchMedia("(max-width: 1179px)").matches;
+}
+
+function setActiveMode(mode){
+  state.activeMode = mode;
+  els.modeBtns.forEach(btn => btn.classList.toggle("active", btn.dataset.mode === mode));
+}
+function setMobileView(view){
+  state.mobileView = view;
+  els.mobileTabs.forEach(tab => tab.classList.toggle("active", tab.dataset.mobileTab === view));
+  els.bottomItems.forEach(item => item.classList.toggle("active", item.dataset.bottom === view));
+  if(view === "chat"){
+    els.feed.classList.remove("hidden");
+    els.mobileWorkspace.classList.remove("active");
+  }else if(view === "workspace"){
+    els.feed.classList.add("hidden");
+    els.mobileWorkspace.classList.add("active");
+    renderMobileWorkspace();
+  }else{
+    els.feed.classList.add("hidden");
+    els.mobileWorkspace.classList.remove("active");
+    openSheet(view);
+  }
+}
+function syncMobileView(){
+  if(!isMobile()) return;
+  if(state.mobileView === "workspace"){
+    els.feed.classList.add("hidden");
+    els.mobileWorkspace.classList.add("active");
+  }else if(state.mobileView === "chat"){
+    els.feed.classList.remove("hidden");
+    els.mobileWorkspace.classList.remove("active");
+  }
+}
+
+function openSheet(kind){
+  const titleMap = {
+    memory: "Memory",
+    profile: "Profile",
+    chatlist: "Chats",
+    settings: "Settings",
+    search: "Search"
+  };
+  els.sheetTitle.textContent = titleMap[kind] || "Paneel";
+  els.sheetBody.innerHTML = "";
+  if(kind === "memory"){
+    const card = document.createElement("div");
+    card.className = "panelCard";
+    card.innerHTML = `
+      <div class="panelTitle">Persoonlijk</div>
+      <div>${(state.memory.projects.length ? state.memory.projects : ["Geen items"]).map(x => `<div class="memoryItem">${escapeHtml(x)}</div>`).join("")}</div>
+      <div class="panelTitle" style="margin-top:12px;">Projecten</div>
+      <div>${(state.memory.goals.length ? state.memory.goals : ["Geen items"]).map(x => `<div class="memoryItem">${escapeHtml(x)}</div>`).join("")}</div>
+      <div class="panelTitle" style="margin-top:12px;">Notities</div>
+      <div>${(state.memory.notes.length ? state.memory.notes : ["Geen items"]).map(x => `<div class="memoryItem">${escapeHtml(x)}</div>`).join("")}</div>
+    `;
+    els.sheetBody.appendChild(card);
+  }else if(kind === "profile"){
+    const card = document.createElement("div");
+    card.className = "panelCard";
+    card.innerHTML = `
+      <div class="profileCard" style="margin:0;">
+        <div class="profileLeft">
+          <div class="profileAvatar"></div>
+          <div class="profileMeta">
+            <div class="profileName"><span>${escapeHtml(state.profileName)}</span><span class="proPill">Pro</span></div>
+            <div class="profileSub"><span class="onlineDot"></span> Online</div>
+          </div>
+        </div>
+      </div>
+      <div style="height:12px"></div>
+      <div class="panelTitle">Sessie</div>
+      <div class="memoryItem">Cookie login actief</div>
+      <div class="memoryItem">Chats opgeslagen</div>
+      <div class="memoryItem">Workspace verbonden</div>
+    `;
+    els.sheetBody.appendChild(card);
+  }else if(kind === "chatlist"){
+    renderChatsSheet();
+  }else if(kind === "settings"){
+    const card = document.createElement("div");
+    card.className = "panelCard";
+    card.innerHTML = `
+      <div class="panelTitle">Instellingen</div>
+      <div class="memoryItem">Voice Mode</div>
+      <div class="memoryItem">Auto scroll</div>
+      <div class="memoryItem">Agent hints</div>
+      <div class="memoryItem">Mobile / Desktop adaptive</div>
+    `;
+    els.sheetBody.appendChild(card);
+  }else if(kind === "search"){
+    const card = document.createElement("div");
+    card.className = "panelCard";
+    card.innerHTML = `
+      <div class="panelTitle">Zoeken</div>
+      <input id="sheetSearch" class="loginInput" style="width:100%;margin-bottom:12px;" placeholder="Zoek chat, memory, bestand..." />
+      <div id="sheetSearchResults"></div>
+    `;
+    els.sheetBody.appendChild(card);
+    const input = document.getElementById("sheetSearch");
+    const results = document.getElementById("sheetSearchResults");
+    const renderResults = () => {
+      const q = input.value.trim().toLowerCase();
+      const items = [];
+      state.chats.forEach(c => {
+        if(c.title.toLowerCase().includes(q) || !q){
+          items.push({ label: `Chat · ${c.title}`, type:"chat", id:c.id });
+        }
+      });
+      state.memory.projects.forEach(x => { if(x.toLowerCase().includes(q) || !q) items.push({ label:`Project · ${x}`, type:"mem" });});
+      state.memory.goals.forEach(x => { if(x.toLowerCase().includes(q) || !q) items.push({ label:`Goal · ${x}`, type:"mem" });});
+      state.memory.notes.forEach(x => { if(x.toLowerCase().includes(q) || !q) items.push({ label:`Note · ${x}`, type:"mem" });});
+      results.innerHTML = items.length
+        ? items.map(i => `<div class="fileRow"><div class="fileRowLeft"><div class="fileExt">⌕</div><div class="fileRowTitle"><div class="fileRowName">${escapeHtml(i.label)}</div><div class="fileRowSize">${escapeHtml(i.type)}</div></div></div></div>`).join("")
+        : `<div style="color:rgba(255,255,255,0.48);">Geen resultaten</div>`;
+    };
+    input.addEventListener("input", renderResults);
+    renderResults();
+  }
+  els.mobileSheet.classList.add("open");
+}
+function closeSheet(){
+  els.mobileSheet.classList.remove("open");
+}
+function openFileModal(file){
+  els.fileModalName.textContent = file.name;
+  els.fileModalMeta.textContent = `${prettySize(file.content)} · ${file.name.split(".").pop().toUpperCase()}`;
+  els.fileModalContent.textContent = file.content || "Geen inhoud";
+  els.fileModal.classList.add("open");
+}
+function closeFileModal(){
+  els.fileModal.classList.remove("open");
+}
+function prettySize(content){
+  const bytes = new Blob([content || ""]).size;
+  if(bytes < 1024) return `${bytes} B`;
+  if(bytes < 1024*1024) return `${(bytes/1024).toFixed(1)} KB`;
+  return `${(bytes/1024/1024).toFixed(1)} MB`;
+}
+function setTerminal(lines){
+  els.terminal.textContent = lines.join("\n");
+}
+function addTerminalLine(line){
+  const current = els.terminal.textContent.trim() ? els.terminal.textContent.split("\n") : [];
+  current.push(line);
+  els.terminal.textContent = current.join("\n");
+  els.terminal.scrollTop = els.terminal.scrollHeight;
+}
+function clearTerminal(){
+  els.terminal.textContent = "> ready";
+}
+function renderLogsPanel(){
+  els.logsList.innerHTML = state.logs.length
+    ? state.logs.map(l => `<div class="logLine">${escapeHtml(l)}</div>`).join("")
+    : `<div class="logLine dim">Nog geen logs</div>`;
+}
+function renderFilesPanel(files){
+  els.filesList.innerHTML = files.length
+    ? files.map(f => `
+      <div class="fileRow" data-file="${escapeHtml(f.name)}">
+        <div class="fileRowLeft">
+          <div class="fileExt">${escapeHtml((f.name.split(".").pop() || "").slice(0,2).toUpperCase())}</div>
+          <div class="fileRowTitle">
+            <div class="fileRowName">${escapeHtml(f.name)}</div>
+            <div class="fileRowSize">${prettySize(f.content)}</div>
+          </div>
+        </div>
+        <div class="fileRowRight">👁</div>
+      </div>
+    `).join("")
+    : `<div style="color:rgba(255,255,255,0.48);">Geen bestanden</div>`;
+  els.filesList.querySelectorAll("[data-file]").forEach(node => {
+    node.addEventListener("click", () => {
+      const file = state.lastFiles.find(f => f.name === node.dataset.file);
+      if(file) openFileModal(file);
+    });
+  });
+}
+function renderMemorySidebar(){
+  els.memoryPersonal.innerHTML = state.memory.projects.length
+    ? state.memory.projects.map(x => `<div class="memoryItem">${escapeHtml(x)}</div>`).join("")
+    : `<div class="memoryItem">Geen items</div>`;
+  els.memoryProjects.innerHTML = state.memory.goals.length
+    ? state.memory.goals.map(x => `<div class="memoryItem">${escapeHtml(x)}</div>`).join("")
+    : `<div class="memoryItem">Geen items</div>`;
+  els.memoryNotes.innerHTML = state.memory.notes.length
+    ? state.memory.notes.map(x => `<div class="memoryItem">${escapeHtml(x)}</div>`).join("")
+    : `<div class="memoryItem">Geen items</div>`;
+}
+function renderChatsSidebar(){
+  els.chatList.innerHTML = state.chats.length
+    ? state.chats.map(chat => `
+      <div class="chatItem ${chat.id === state.activeChatId ? "active" : ""}" data-chat="${escapeHtml(chat.id)}">
+        <div class="chatItemName">${escapeHtml(chat.title || "Nieuwe chat")}</div>
+        <div class="chatItemMeta">${chat.messages?.length || 0}</div>
+      </div>
+    `).join("")
+    : `<div style="color:rgba(255,255,255,0.48);font-size:14px;">Geen chats</div>`;
+  els.chatList.querySelectorAll("[data-chat]").forEach(node => {
+    node.addEventListener("click", () => selectChat(node.dataset.chat));
+  });
+}
+function renderMessages(messages){
+  els.feed.innerHTML = "";
+  if(!messages || !messages.length){
+    addBotWelcome();
+    return;
+  }
+  messages.forEach(msg => {
+    if(msg.role === "user"){
+      addUserMessage(msg.content, false);
+    }else{
+      addBotMessage(msg.content, false);
+    }
+  });
+  scrollFeedToBottom(true);
+}
+function addUserMessage(text, persist = true){
+  const row = document.createElement("div");
+  row.className = "msgRow user";
+  row.innerHTML = `
+    <div style="flex:1"></div>
+    <div class="msgStack">
+      <div class="bubble">${escapeHtml(text)}</div>
+      <div class="timestamp">${timeLabel()}</div>
+    </div>
+  `;
+  els.feed.appendChild(row);
+  if(persist) appendMessageToActiveChat({ role:"user", content:text });
+  scrollFeedToBottom();
+}
+function addBotMessage(text, persist = true){
+  const row = document.createElement("div");
+  row.className = "msgRow bot";
+  row.innerHTML = `
+    <div class="avatarOrb"></div>
+    <div class="msgStack">
+      <div class="bubble">${escapeHtml(text)}</div>
+      <div class="timestamp">${timeLabel()}</div>
+    </div>
+  `;
+  els.feed.appendChild(row);
+  if(persist) appendMessageToActiveChat({ role:"assistant", content:text });
+  scrollFeedToBottom();
+}
+function addBotWelcome(){
+  const row = document.createElement("div");
+  row.className = "msgRow bot";
+  row.innerHTML = `
+    <div class="avatarOrb"></div>
+    <div class="msgStack">
+      <div class="bubble">Hoi Daniël. Wat wil je vandaag bouwen?</div>
+      <div class="timestamp">${timeLabel()}</div>
+    </div>
+  `;
+  els.feed.appendChild(row);
+  scrollFeedToBottom(true);
+}
+function addTypingIndicator(){
+  const row = document.createElement("div");
+  row.className = "msgRow bot";
+  row.id = "typingRow";
+  row.innerHTML = `
+    <div class="avatarOrb"></div>
+    <div class="msgStack">
+      <div class="bubble" style="padding:12px 14px;">
+        <div class="senderDots" aria-label="Solvera typt">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+      <div class="timestamp">${timeLabel()}</div>
+    </div>
+  `;
+  els.feed.appendChild(row);
+  scrollFeedToBottom();
+}
+function removeTypingIndicator(){
+  document.getElementById("typingRow")?.remove();
+}
+function addThinkingBlock(){
+  const row = document.createElement("div");
+  row.className = "msgRow bot";
+  row.id = "thinkingRow";
+  row.innerHTML = `
+    <div class="avatarOrb"></div>
+    <div class="msgStack">
+      <div class="senderLine">
+        <span class="senderName">Solvera</span>
+        <span>›</span>
+        <span class="senderState">Thinking</span>
+        <span class="senderDots"><span></span><span></span><span></span></span>
+      </div>
+      <div class="thinkingCard">
+        <div class="thinkingTitle">Thinking <span class="senderDots"><span></span><span></span><span></span></span></div>
+        <div class="timeline" id="thinkingTimeline"></div>
+      </div>
+      <div class="timestamp">${timeLabel()}</div>
+    </div>
+  `;
+  els.feed.appendChild(row);
+  const steps = [
+    "Analyseer verzoek",
+    "Plan componenten",
+    "Bouw structuur",
+    "Voeg animaties toe",
+    "Optimaliseer responsive",
+    "Test en voltooi"
+  ];
+  const timeline = document.getElementById("thinkingTimeline");
+  timeline.innerHTML = steps.map((s, i) => `
+    <div class="timelineStep" id="thinkStep${i}">
+      <span>${escapeHtml(s)}</span>
+      <span id="thinkIcon${i}" class="timelineCheck">${i === 2 ? "◌" : "✓"}</span>
+    </div>
+  `).join("");
+  scrollFeedToBottom();
+}
+function updateThinkingStep(index, stateName){
+  const step = document.getElementById(`thinkStep${index}`);
+  const icon = document.getElementById(`thinkIcon${index}`);
+  if(!step || !icon) return;
+  step.classList.remove("active","done");
+  if(stateName === "active"){
+    step.classList.add("active");
+    icon.textContent = "◌";
+    icon.className = "timelineSpinner";
+  }else if(stateName === "done"){
+    step.classList.add("done");
+    icon.textContent = "✓";
+    icon.className = "timelineCheck";
+  }
+}
+function removeThinkingBlock(){
+  document.getElementById("thinkingRow")?.remove();
+}
+function addResponseCard(text){
+  const row = document.createElement("div");
+  row.className = "msgRow bot";
+  row.innerHTML = `
+    <div class="avatarOrb"></div>
+    <div class="msgStack" style="gap:8px;">
+      <div class="responseCard">
+        <div class="responseText">${escapeHtml(text)}</div>
+        <div class="responseTime">${timeLabel()}</div>
+      </div>
+    </div>
+  `;
+  els.feed.appendChild(row);
+  scrollFeedToBottom();
+}
+function addFileCard(file){
+  const row = document.createElement("div");
+  row.className = "msgRow bot";
+  row.innerHTML = `
+    <div style="width:32px;"></div>
+    <div class="fileCard">
+      <div class="fileLeft">
+        <div class="fileIcon">◫</div>
+        <div class="fileMeta">
+          <div class="fileName">${escapeHtml(file.name)}</div>
+          <div class="fileInfo">${prettySize(file.content)} · ${escapeHtml((file.name.split(".").pop() || "").toUpperCase())}</div>
+        </div>
+      </div>
+      <div class="fileActions">
+        <div class="fileAction" title="Bekijken">👁</div>
+        <div class="fileAction" title="Download">⤓</div>
+      </div>
+    </div>
+  `;
+  els.feed.appendChild(row);
+  scrollFeedToBottom();
+}
+function addQuickReplyChips(labels){
+  const row = document.createElement("div");
+  row.className = "msgRow bot";
+  row.innerHTML = `
+    <div style="width:32px;"></div>
+    <div class="msgStack" style="gap:10px;">
+      <div class="quickChips">
+        ${labels.map(l => `<button class="quickChip" data-chip="${escapeHtml(l)}">${escapeHtml(l)}</button>`).join("")}
+      </div>
+    </div>
+  `;
+  els.feed.appendChild(row);
+  row.querySelectorAll("[data-chip]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      els.composerInput.value = btn.dataset.chip;
+      autosizeComposer();
+      els.composerInput.focus();
+    });
+  });
+}
+function scrollFeedToBottom(force = false){
+  requestAnimationFrame(() => {
+    els.feed.scrollTo({
+      top: els.feed.scrollHeight + 240,
+      behavior: force ? "auto" : "smooth"
+    });
+  });
+}
+function autosizeComposer(){
+  els.composerInput.style.height = "auto";
+  els.composerInput.style.height = Math.min(els.composerInput.scrollHeight, 124) + "px";
+}
+function updateActiveChatInSidebar(){
+  renderChatsSidebar();
+}
+
+function loadStateFromChat(chat){
+  renderMessages(chat?.messages || []);
+  updateActiveChatInSidebar();
+}
+function appendMessageToActiveChat(message){
+  const chat = state.chats.find(c => c.id === state.activeChatId);
+  if(!chat) return;
+  chat.messages = chat.messages || [];
+  chat.messages.push(message);
+  renderChatsSidebar();
+}
+
+function buildFileSizeApprox(content){
+  return prettySize(content);
+}
+
+async function fetchJSON(url, options){
+  const res = await fetch(url, options);
+  if(!res.ok){
+    const text = await res.text().catch(()=>"");
+    throw new Error(text || `HTTP ${res.status}`);
+  }
+  const ct = res.headers.get("content-type") || "";
+  if(ct.includes("application/json")) return res.json();
+  return res.text();
+}
+
+async function login(password){
+  const res = await fetch(`${API_BASE}/api/auth/login`, {
+    method:"POST",
+    credentials:"include",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({ password })
+  });
+  return res;
+}
+
+async function initAuth(){
+  const saved = sessionStorage.getItem("solvera_authed") === "1";
+  if(saved){
+    els.loginOverlay.classList.add("hidden");
+    state.authReady = true;
+    return true;
+  }
+  return false;
+}
+
+async function submitLogin(e){
+  e.preventDefault();
+  els.loginError.textContent = "";
+  const password = els.passwordInput.value.trim();
+  if(!password){
+    els.loginError.textContent = "Vul je wachtwoord in.";
+    return;
+  }
+  try{
+    const res = await login(password);
+    if(!res.ok){
+      els.loginError.textContent = "Onjuist wachtwoord.";
+      return;
+    }
+    sessionStorage.setItem("solvera_authed", "1");
+    els.loginOverlay.classList.add("hidden");
+    state.authReady = true;
+    await boot();
+  }catch(err){
+    els.loginError.textContent = "Login mislukt.";
+  }
+}
+
+function connectLogs(){
+  try{
+    if(state.sse) state.sse.close();
+  }catch{}
+  const es = new EventSource(`${API_BASE}/api/agent/logs`, { withCredentials:true });
+  state.sse = es;
+  es.onmessage = (e) => {
+    try{
+      const data = JSON.parse(e.data);
+      const text = data.text || String(data);
+      state.logs.push(text);
+      if(state.logs.length > 120) state.logs.shift();
+      renderLogsPanel();
+      addTerminalLine(`> ${text}`);
+    }catch{}
+  };
+  es.onerror = () => {};
+}
+
+async function loadMemory(){
+  const mem = await fetchJSON(`${API_BASE}/api/memory`, { credentials:"include" });
+  state.memory = mem || { projects:[], goals:[], notes:[] };
+  renderMemorySidebar();
+}
+async function loadChats(){
+  const chats = await fetchJSON(`${API_BASE}/api/chats`, { credentials:"include" });
+  state.chats = Array.isArray(chats) ? chats : [];
+  if(!state.chats.length){
+    const created = await fetchJSON(`${API_BASE}/api/chat/new`, {
+      method:"POST",
+      credentials:"include",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ title:"Website voor portfolio" })
+    });
+    state.chats = [created];
+  }
+  if(!state.activeChatId && state.chats[0]) state.activeChatId = state.chats[0].id;
+  renderChatsSidebar();
+  const active = state.chats.find(c => c.id === state.activeChatId) || state.chats[0];
+  if(active){
+    state.activeChatId = active.id;
+    loadStateFromChat(active);
+  }
+}
+async function selectChat(chatId){
+  state.activeChatId = chatId;
+  const chat = state.chats.find(c => c.id === chatId);
+  renderChatsSidebar();
+  loadStateFromChat(chat);
+  setStatus("Solvera is ready");
+}
+async function newChat(){
+  const title = "Nieuwe chat";
+  const created = await fetchJSON(`${API_BASE}/api/chat/new`, {
+    method:"POST",
+    credentials:"include",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({ title })
+  });
+  state.chats.unshift(created);
+  state.activeChatId = created.id;
+  renderChatsSidebar();
+  renderMessages([]);
+  if(isMobile()) setMobileView("chat");
+}
+
+function openPreview(){
+  state.previewCacheBuster = Date.now();
+  els.previewFrame.src = `${API_BASE}/preview?ts=${state.previewCacheBuster}`;
+}
+async function refreshFilesAndPreview(){
+  try{
+    const data = await fetchJSON(`${API_BASE}/api/files`, { credentials:"include" });
+    const files = (data.files || []);
+    state.lastFiles = files;
+    renderFilesPanel(files);
+    openPreview();
+    if(isMobile()){
+      renderMobileWorkspace();
+    }
+  }catch{}
+}
+function renderMobileWorkspace(){
+  const files = state.lastFiles || [];
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = `
+    <div class="mobileStatusCard" style="display:flex; margin:0 0 12px 0;">
+      <div class="agentStatusLeft">
+        <div class="agentRing"></div>
+        <div class="agentStatusCopy">
+          <div class="agentStatusTitle">Agent Status <span style="color:var(--green)">● Actief</span></div>
+          <div class="agentStatusSub">Bezig met bouwen...</div>
+        </div>
+      </div>
+      <div class="agentGauge"><span>${state.agentProgress}%</span></div>
+    </div>
+
+    <div class="panelCard">
+      <div class="panelTitle">Terminal</div>
+      <div class="terminal" style="max-height:220px;">${escapeHtml(els.terminal.textContent || "> ready")}</div>
+    </div>
+
+    <div class="panelCard">
+      <div class="panelTitle">Bestanden</div>
+      <div>
+        ${
+          files.length
+            ? files.map(f => `
+              <div class="fileRow" data-mobile-file="${escapeHtml(f.name)}">
+                <div class="fileRowLeft">
+                  <div class="fileExt">${escapeHtml((f.name.split(".").pop() || "").slice(0,2).toUpperCase())}</div>
+                  <div class="fileRowTitle">
+                    <div class="fileRowName">${escapeHtml(f.name)}</div>
+                    <div class="fileRowSize">${prettySize(f.content)}</div>
+                  </div>
+                </div>
+                <div class="fileRowRight">👁</div>
+              </div>
+            `).join("")
+            : `<div style="color:rgba(255,255,255,0.48);">Geen bestanden</div>`
+        }
+      </div>
+    </div>
+
+    <div class="panelCard">
+      <div class="panelTitle">Live Preview</div>
+      <iframe class="previewFrame" src="${API_BASE}/preview?ts=${state.previewCacheBuster}"></iframe>
+    </div>
+  `;
+  els.mobileWorkspace.innerHTML = "";
+  els.mobileWorkspace.appendChild(wrapper);
+  els.mobileWorkspace.querySelectorAll("[data-mobile-file]").forEach(node => {
+    node.addEventListener("click", () => {
+      const file = files.find(f => f.name === node.dataset.mobileFile);
+      if(file) openFileModal(file);
+    });
+  });
+}
+
+function switchDesktopTab(tab){
+  els.tabs.forEach(t => t.classList.toggle("active", t.dataset.tab === tab));
+  els.terminalPanel.classList.toggle("hidden", tab !== "terminal");
+  els.filesPanel.classList.toggle("hidden", tab !== "files");
+  els.previewPanel.classList.toggle("hidden", tab !== "preview");
+  els.logsPanel.classList.toggle("hidden", tab !== "logs");
+}
+function connectDesktopTabActions(){
+  els.tabs.forEach(tab => tab.addEventListener("click", () => switchDesktopTab(tab.dataset.tab)));
+}
+
+function openMobileSheetFromBottom(kind){
+  if(kind === "chat") return setMobileView("chat");
+  if(kind === "workspace") return setMobileView("workspace");
+  if(kind === "memory") return openSheet("memory");
+  if(kind === "profile") return openSheet("profile");
+}
+
+function isBuildIntent(text){
+  const t = text.toLowerCase();
+  return (
+    t.includes("maak") ||
+    t.includes("build") ||
+    t.includes("website") ||
+    t.includes("landing") ||
+    t.includes("dashboard") ||
+    t.includes("app") ||
+    t.includes("component") ||
+    t.includes("animatie") ||
+    t.includes("style") ||
+    t.includes("ui")
+  );
+}
+
+function showProcessingUi(){
+  addThinkingBlock();
+  updateThinkingStep(0, "done");
+  updateThinkingStep(1, "done");
+  updateThinkingStep(2, "active");
+}
+function advanceThinkingToDone(){
+  updateThinkingStep(2, "done");
+  updateThinkingStep(3, "done");
+  updateThinkingStep(4, "done");
+  updateThinkingStep(5, "done");
+}
+
+async function sendMessage(){
+  const text = els.composerInput.value.trim();
+  if(!text) return;
+  if(!state.activeChatId){
+    await newChat();
+  }
+
+  addUserMessage(text);
+  els.composerInput.value = "";
+  autosizeComposer();
+  setStatus("Solvera denkt…");
+
+  if(isBuildIntent(text) || state.activeMode === "agent"){
+    state.runningAgent = true;
+    state.logs = [];
+    renderLogsPanel();
+    clearTerminal();
+    addTypingIndicator();
+    removeTypingIndicator();
+    showProcessingUi();
+    setDesktopProgress(18);
+
+    try{
+      const agentPromise = fetchJSON(`${API_BASE}/api/agent`, {
+        method:"POST",
+        credentials:"include",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({ input:text })
+      });
+
+      const logsOpen = true;
+      setTimeout(() => setDesktopProgress(42), 180);
+      setTimeout(() => setDesktopProgress(72), 420);
+
+      const result = await agentPromise;
+
+      setDesktopProgress(100);
+      advanceThinkingToDone();
+      state.runningAgent = false;
+      state.lastFiles = [];
+      await refreshFilesAndPreview();
+
+      const summary = result?.summary || "Klaar.";
+      addResponseCard(summary);
+
+      if(Array.isArray(result?.files) && result.files.length){
+        result.files.forEach(file => {
+          addFileCard(file);
+        });
+      }
+
+      addQuickReplyChips([
+        "Gebruik deze kleuren",
+        "Maak het donker thema",
+        "Voeg meer animaties toe"
+      ]);
+      setStatus("Solvera is ready");
+      if(isMobile()) setMobileView("chat");
+    }catch(err){
+      removeThinkingBlock();
+      addBotMessage("Er ging iets mis bij de agent.");
+      setStatus("Fout");
+    }
+  }else{
+    addTypingIndicator();
+    try{
+      const res = await fetch(`${API_BASE}/api/stream`, {
+        method:"POST",
+        credentials:"include",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({ input:text, chatId: state.activeChatId })
+      });
+
+      if(!res.body){
+        const txt = await res.text();
+        removeTypingIndicator();
+        addBotMessage(txt || "Geen antwoord.");
+        setStatus("Solvera is ready");
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let full = "";
+      let botRow = document.createElement("div");
+      botRow.className = "msgRow bot";
+      botRow.innerHTML = `
+        <div class="avatarOrb"></div>
+        <div class="msgStack">
+          <div class="bubble"></div>
+          <div class="timestamp">${timeLabel()}</div>
+        </div>
+      `;
+      const bubble = botRow.querySelector(".bubble");
+      els.feed.appendChild(botRow);
+      removeTypingIndicator();
+
+      while(true){
+        const {done, value} = await reader.read();
+        if(done) break;
+        const chunk = decoder.decode(value, { stream:true });
+        full += chunk;
+        bubble.textContent = full + "▍";
+        scrollFeedToBottom();
+      }
+      bubble.textContent = full;
+      appendMessageToActiveChat({ role:"assistant", content:full });
+      renderChatsSidebar();
+      setStatus("Solvera is ready");
+    }catch(err){
+      removeTypingIndicator();
+      addBotMessage("Stream mislukt.");
+      setStatus("Fout");
+    }
+  }
+}
+
+function openVoiceMode(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){
+    setStatus("Voice niet ondersteund");
+    return;
+  }
+  const rec = new SR();
+  rec.lang = "nl-NL";
+  rec.interimResults = false;
+  rec.continuous = false;
+  setStatus("Ik luister…");
+  rec.onresult = (e) => {
+    const transcript = e.results?.[0]?.[0]?.transcript || "";
+    els.composerInput.value = transcript;
+    autosizeComposer();
+  };
+  rec.onerror = () => setStatus("Voice mislukt");
+  rec.onend = () => setStatus("Solvera is ready");
+  rec.start();
+}
+
+function renderMobileHeaders(){
+  if(isMobile()){
+    if(state.mobileView === "workspace"){
+      els.feed.classList.add("hidden");
+      els.mobileWorkspace.classList.add("active");
+    }else{
+      els.feed.classList.remove("hidden");
+      els.mobileWorkspace.classList.remove("active");
+    }
+  }
+}
+
+function connectHandlers(){
+  els.loginForm.addEventListener("submit", submitLogin);
+
+  els.fileModalClose.addEventListener("click", closeFileModal);
+  els.fileModal.addEventListener("click", (e) => {
+    if(e.target === els.fileModal) closeFileModal();
+  });
+
+  els.sheetClose.addEventListener("click", closeSheet);
+  els.mobileSheet.addEventListener("click", (e) => {
+    if(e.target === els.mobileSheet) closeSheet();
+  });
+
+  els.newChatBtn.addEventListener("click", newChat);
+  els.sendBtn.addEventListener("click", sendMessage);
+  els.plusBtn.addEventListener("click", () => {
+    els.composerInput.value = "";
+    els.composerInput.focus();
+  });
+  els.micBtn.addEventListener("click", openVoiceMode);
+  els.voiceModeBtn.addEventListener("click", openVoiceMode);
+  els.settingsBtn.addEventListener("click", () => openSheet("settings"));
+  els.mobileMenuBtn.addEventListener("click", () => openSheet("chatlist"));
+  els.mobileSearchBtn.addEventListener("click", () => openSheet("search"));
+  els.downloadBtn.addEventListener("click", () => window.open(`${API_BASE}/api/download`, "_blank"));
+  els.workspaceOpenBtn.addEventListener("click", () => openPreview());
+  els.workspaceCloseBtn.addEventListener("click", () => {
+    els.previewFrame.src = "about:blank";
+  });
+  els.desktopOpenBtn.addEventListener("click", () => openPreview());
+  els.bottomChat.addEventListener("click", () => openMobileSheetFromBottom("chat"));
+  els.bottomWorkspace.addEventListener("click", () => openMobileSheetFromBottom("workspace"));
+  els.bottomMemory.addEventListener("click", () => openMobileSheetFromBottom("memory"));
+  els.bottomProfile.addEventListener("click", () => openMobileSheetFromBottom("profile"));
+  els.bottomCore.addEventListener("click", () => openMobileSheetFromBottom("workspace"));
+
+  els.modeBtns.forEach(btn => {
+    btn.addEventListener("click", () => setActiveMode(btn.dataset.mode));
+  });
+
+  els.quickChips.forEach(chip => {
+    chip.addEventListener("click", () => {
+      els.composerInput.value = chip.dataset.chip;
+      autosizeComposer();
+      els.composerInput.focus();
+    });
+  });
+
+  els.mobileTabs.forEach(tab => {
+    tab.addEventListener("click", () => setMobileView(tab.dataset.mobileTab));
+  });
+
+  els.composerInput.addEventListener("input", autosizeComposer);
+  els.composerInput.addEventListener("keydown", (e) => {
+    if(e.key === "Enter" && !e.shiftKey){
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  els.previewFrame.addEventListener("load", () => {});
+  connectDesktopTabActions();
+  window.addEventListener("resize", renderMobileHeaders);
+  window.addEventListener("resize", syncMobileView);
+}
+
+async function refreshWorkspace(){
+  await refreshFilesAndPreview();
+}
+
+async function boot(){
+  connectHandlers();
+  connectLogs();
+  await loadMemory();
+  await loadChats();
+  renderMemorySidebar();
+  renderChatsSidebar();
+  renderLogsPanel();
+  await refreshWorkspace();
+  openPreview();
+  if(isMobile()){
+    setMobileView("chat");
+  }
+  setDesktopProgress(72);
+  addQuickReplyChips([
+    "Gebruik deze kleuren",
+    "Maak het donker thema",
+    "Voeg meer animaties toe"
+  ]);
+}
+
+(async function start(){
+  const ok = await initAuth();
+  if(ok){
+    els.loginOverlay.classList.add("hidden");
+    state.authReady = true;
+    await boot();
+  }
+})();
+
+</script>
+</body>
+</html>
